@@ -1,0 +1,239 @@
+Hier folgt eine ausführliche, präzise und strukturierte Programmieranleitung, die als Prompt für eine KI (z. B. GitHub Copilot, GPT-4o oder Claude 3) dient, um das Projekt **NeuroScan** vollständig umzusetzen.
+
+---
+
+## 🔖 KI-Prompt: Komplettes NeuroScan-Projekt erstellen
+
+---
+
+### 📌 Allgemeine Anweisungen:
+
+**Name:** NeuroScan
+**Anbieter:** NeuroCompany
+**Plattformen:** Windows & macOS
+**Technologien:** Ausschließlich Open Source (Python, PySide6, FastAPI, SQLite, ReportLab, Vue/React, TailwindCSS)
+**Design:** Premium Glassmorphism-Design mit Mini-Animationen
+**Lizenz:** MIT
+
+---
+
+## ✅ **Schritt 1 – Projektstruktur anlegen**
+
+Erstelle folgende Ordnerstruktur:
+
+```plaintext
+NeuroScan/
+│
+├── DesktopApp/              # Desktop-Client (PySide6)
+│   ├── assets/              # Icons, Logos
+│   ├── gui/                 # UI-Dateien (.ui, QML)
+│   ├── modules/             # Python-Logik
+│   ├── animations/          # Mini-Animationen
+│   ├── config.json
+│   ├── requirements.txt
+│   └── main.py
+│
+├── BackendAPI/              # REST-API (FastAPI)
+│   ├── app/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── schemas/
+│   │   ├── core/
+│   │   └── utils/
+│   ├── db/                  # Alembic-Migrationen
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── main.py
+│
+├── WebFrontend/             # Verifikationsseite
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── api/
+│   │   ├── assets/
+│   │   ├── router/
+│   │   └── App.vue
+│   ├── package.json
+│   └── vite.config.js
+│
+├── Documentation/
+│   ├── DESIGN.md
+│   ├── ARCHITECTURE.md
+│   └── API_SPECIFICATION.md
+│
+├── LICENSE
+├── .gitignore
+└── README.md
+```
+
+---
+
+## ✅ **Schritt 2 – Desktop-Anwendung mit PySide6**
+
+Nutze PySide6 mit QML für ein modernes Glassmorphism-UI:
+
+**Pflichtfeatures:**
+
+* **Dashboard:** Übersicht Kunden, Zertifikate, Hostingstatus
+* **Kundenverwaltung:** Stammdaten, Logo-Upload
+* **Zertifikatgenerator:** QR + Seriennummer + PDF-Erzeugung
+* **PDF-Label-Erstellung:** ReportLab für QR-Code, Seriennummer, Logo
+
+**Technikvorgaben:**
+
+* Datenbank: SQLite lokal (später PostgreSQL)
+* Kommunikation: REST API (BackendAPI)
+
+**UI-Guidelines (Glassmorphism):**
+
+* Hintergrund dunkel (`#111820`)
+* Panels transparent (`rgba(255,255,255,0.2)`) mit Blur
+* Neon-Akzente (`#00E5FF`, `#39FF14`), weiße Schrift
+* Animationen: Hover, Fade-in/-out Effekte, leicht pulsierende Buttons
+
+---
+
+## ✅ **Schritt 3 – REST-API mit FastAPI**
+
+Implementiere eine Backend-API:
+
+* Framework: FastAPI, Uvicorn
+
+* Datenbank: SQLite, SQLAlchemy ORM
+
+* Routen:
+
+  * `/verify/{serial_number}`: Echtheitsprüfung
+  * `/admin/...`: CRUD für Desktopsoftware (Kunden, Zertifikate)
+  * `/api/v1/...`: später für externe Anbindungen (Token-gesichert)
+
+* Datenmodelle: Kunden, Produkte, Zertifikate, Scans (Zeit/IP)
+
+* Sicherheit: HTTPS, Token-basierte API-Auth (OAuth/JWT)
+
+---
+
+## ✅ **Schritt 4 – Web-Frontend zur Echtheitsprüfung**
+
+Erstelle ein modernes Glassmorphism-Webfrontend (React/Vue):
+
+* Framework: React/Vue + TailwindCSS + Axios
+* Features:
+
+  * Scan-URL: `https://verify.neuroscan.com/{serial_number}`
+  * Produktdetails (Name, Logo), Echtheitsstatus anzeigen
+  * Animierte UI (Panels mit Blur, Neon-Akzenten, Microanimations)
+* API-Integration zum BackendAPI (Axios-Calls)
+
+---
+
+## ✅ **Schritt 5 – PDF-Label-Generierung**
+
+Automatische PDF-Erstellung mit Python `ReportLab` und `python-qrcode`:
+
+* Layout:
+
+  * Oben QR-Code + Seriennummer
+  * Mitte Kundenlogo
+  * Unten Produktname, Seriennummertext
+* Ausgabe als druckfertige PDF
+
+---
+
+## ✅ **Schritt 6 – Hosting-Infrastruktur**
+
+Container-basierte Lösung (Docker):
+
+* Container für Backend (FastAPI) + SQLite
+* Später PostgreSQL-Migration
+* Nginx als Reverse Proxy (HTTPS)
+* Hosting zunächst auf kostenlosen Plattformen (z. B. Render, Railway, Vercel)
+
+---
+
+## ✅ **Schritt 7 – API-Erweiterbarkeit (für später)**
+
+API für externe Systeme vorsehen:
+
+* `/api/v1/verify`: Statusprüfung (Authentifizierung: API-Token)
+* `/api/v1/create`: Zertifikate extern erzeugen lassen
+* Swagger/OpenAPI-Dokumentation
+
+---
+
+## ✅ **Schritt 8 – Datensicherheit & Datenschutz**
+
+* HTTPS (Let’s Encrypt-Zertifikate)
+* Minimalprinzip (nur Produkt-/Seriennummerdaten öffentlich)
+* Interne Authentifizierung (Desktop-Software: Passwortschutz)
+* Logging minimal (DSGVO-konform, keine sensiblen Daten dauerhaft gespeichert)
+
+---
+
+## ✅ **Schritt 9 – Open-Source-Komponenten zwingend nutzen**
+
+**Python (MIT)**
+**PySide6 (LGPL/GPL)**
+**FastAPI (MIT)**
+**SQLite (Public Domain)**
+**ReportLab (BSD)**
+**python-qrcode (BSD)**
+**TailwindCSS (MIT)**
+**React/Vue (MIT)**
+
+---
+
+## ✅ **Schritt 10 – Beispielhafte UI-Komponenten**
+
+**Desktop:**
+
+* Dashboard mit Statistiken (Glass-Panels)
+* Produktlisten mit Hover-Animation
+* PDF-Erstellung mit animiertem Button
+
+**Web:**
+
+* Produktinfoseite mit Logo, Seriennummer, Echtheitsstatus
+* Loading-Spinner mit animiertem Neon-Ring
+* Warnung bei Fake-Code mit animiertem Farbwechsel
+
+---
+
+## ✅ **Schritt 11 – Erste Basis-Dokumentation (README.md)**
+
+* Projektziel
+* Einrichtung & Installation
+* Nutzung Desktop-Software
+* API-Nutzung (Swagger/OpenAPI-Doku)
+
+---
+
+## ✅ **Schritt 12 – Testing & Qualitätssicherung**
+
+* Unit-Tests mit pytest
+* Frontend-Tests mit Jest/Vitest
+* Integrationstests für API (Postman/Newman)
+* GitHub Actions CI/CD für automatische Tests & Deployment
+
+---
+
+## ✅ **Schritt 13 – Deployment & MVP**
+
+* Containerisierung (Dockerfile & Compose)
+* MVP auf Testserver bereitstellen (z. B. Render.com)
+* Iterative Verbesserungen nach Nutzerfeedback
+
+---
+
+## ✅ **Schritt 14 – Weiterführende Roadmap**
+
+* PostgreSQL-Migration
+* Erweiterte Analyse-Funktionen
+* Externe API (Shopify-Integration)
+* Hochverfügbarkeits-Setup (CDN, Load-Balancing)
+
+---
+
+## ✨ **Führe jeden Schritt präzise und vollständig aus**, achte auf **benutzerfreundliches, modernes Design** und **strikte Einhaltung der beschriebenen Anforderungen**.
+
+Das Ergebnis ist ein **100 % einsatzfähiges Premiumprodukt** namens NeuroScan.

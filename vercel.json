@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "WebFrontend/package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "WebFrontend/$1"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://neuroscan-api.onrender.com",
+    "VITE_ENVIRONMENT": "production"
+  },
+  "framework": "vite",
+  "buildCommand": "cd WebFrontend && npm install && npm run build",
+  "outputDirectory": "WebFrontend/dist"
+}

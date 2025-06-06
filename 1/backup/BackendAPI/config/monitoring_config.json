@@ -1,0 +1,353 @@
+
+{
+  "notification_channels": [
+    {
+      "type": "email",
+      "name": "admin_email",
+      "enabled": true,
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "use_tls": true,
+      "username": "alerts@neurocompany.com",
+      "password": "your_app_password",
+      "from_email": "alerts@neurocompany.com",
+      "to_emails": [
+        "admin@neurocompany.com",
+        "devops@neurocompany.com"
+      ]
+    },
+    {
+      "type": "slack",
+      "name": "devops_slack",
+      "enabled": true,
+      "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+      "channel": "#alerts",
+      "username": "NeuroScan Monitor"
+    },
+    {
+      "type": "webhook",
+      "name": "pagerduty",
+      "enabled": false,
+      "url": "https://events.pagerduty.com/v2/enqueue",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Token YOUR_PAGERDUTY_TOKEN",
+        "Content-Type": "application/json"
+      },
+      "template": {
+        "routing_key": "YOUR_ROUTING_KEY",
+        "event_action": "trigger",
+        "payload": {
+          "summary": "NeuroScan Alert: {rule_name}",
+          "severity": "{severity}",
+          "source": "NeuroScan",
+          "timestamp": "{created_at}",
+          "custom_details": {
+            "alert_id": "{alert_id}",
+            "message": "{message}",
+            "status": "{status}"
+          }
+        }
+      }
+    },
+    {
+      "type": "webhook",
+      "name": "teams",
+      "enabled": false,
+      "url": "https://YOUR_DOMAIN.webhook.office.com/webhookb2/YOUR_WEBHOOK_ID",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "template": {
+        "@type": "MessageCard",
+        "@context": "http://schema.org/extensions",
+        "themeColor": "FF0000",
+        "summary": "NeuroScan Alert",
+        "sections": [
+          {
+            "activityTitle": "NeuroScan Alert: {rule_name}",
+            "activitySubtitle": "Severity: {severity}",
+            "facts": [
+              {
+                "name": "Alert ID",
+                "value": "{alert_id}"
+              },
+              {
+                "name": "Message",
+                "value": "{message}"
+              },
+              {
+                "name": "Time",
+                "value": "{created_at}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "alert_rules": [
+    {
+      "name": "high_error_rate",
+      "description": "API error rate is above acceptable threshold",
+      "condition": "error_rate > 10",
+      "threshold": 10.0,
+      "severity": "warning",
+      "metric_name": "api_error_rate",
+      "duration_minutes": 5,
+      "cooldown_minutes": 15,
+      "enabled": true,
+      "labels": {
+        "category": "api",
+        "team": "backend"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/high-error-rate",
+        "description": "High error rate detected in API endpoints"
+      }
+    },
+    {
+      "name": "critical_error_rate",
+      "description": "Critical API error rate - immediate attention required",
+      "condition": "error_rate > 25",
+      "threshold": 25.0,
+      "severity": "critical",
+      "metric_name": "api_error_rate",
+      "duration_minutes": 2,
+      "cooldown_minutes": 10,
+      "enabled": true,
+      "labels": {
+        "category": "api",
+        "team": "backend",
+        "priority": "high"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/critical-error-rate",
+        "escalation": "Immediate escalation to on-call engineer"
+      }
+    },
+    {
+      "name": "high_response_time",
+      "description": "API response times are slower than expected",
+      "condition": "avg_response_time > 2000",
+      "threshold": 2000.0,
+      "severity": "warning",
+      "metric_name": "api_response_time_ms",
+      "duration_minutes": 10,
+      "cooldown_minutes": 20,
+      "enabled": true,
+      "labels": {
+        "category": "performance",
+        "team": "backend"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/slow-response-times"
+      }
+    },
+    {
+      "name": "database_connection_failure",
+      "description": "Database connection issues detected",
+      "condition": "db_connection_errors > 0",
+      "threshold": 0.0,
+      "severity": "critical",
+      "metric_name": "database_errors",
+      "duration_minutes": 1,
+      "cooldown_minutes": 5,
+      "enabled": true,
+      "labels": {
+        "category": "database",
+        "team": "platform",
+        "priority": "critical"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/database-issues",
+        "escalation": "Page DBA and platform team immediately"
+      }
+    },
+    {
+      "name": "disk_space_warning",
+      "description": "Disk space is running low",
+      "condition": "disk_usage_percent > 80",
+      "threshold": 80.0,
+      "severity": "warning",
+      "metric_name": "disk_usage_percent",
+      "duration_minutes": 30,
+      "cooldown_minutes": 60,
+      "enabled": true,
+      "labels": {
+        "category": "infrastructure",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/disk-space-cleanup"
+      }
+    },
+    {
+      "name": "disk_space_critical",
+      "description": "Critical disk space - immediate action required",
+      "condition": "disk_usage_percent > 90",
+      "threshold": 90.0,
+      "severity": "critical",
+      "metric_name": "disk_usage_percent",
+      "duration_minutes": 10,
+      "cooldown_minutes": 30,
+      "enabled": true,
+      "labels": {
+        "category": "infrastructure",
+        "team": "platform",
+        "priority": "critical"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/critical-disk-space",
+        "escalation": "Immediate intervention required"
+      }
+    },
+    {
+      "name": "memory_usage_high",
+      "description": "Memory usage is higher than recommended",
+      "condition": "memory_usage_percent > 85",
+      "threshold": 85.0,
+      "severity": "warning",
+      "metric_name": "memory_usage_percent",
+      "duration_minutes": 15,
+      "cooldown_minutes": 30,
+      "enabled": true,
+      "labels": {
+        "category": "infrastructure",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/high-memory-usage"
+      }
+    },
+    {
+      "name": "memory_usage_critical",
+      "description": "Critical memory usage - system may become unstable",
+      "condition": "memory_usage_percent > 95",
+      "threshold": 95.0,
+      "severity": "critical",
+      "metric_name": "memory_usage_percent",
+      "duration_minutes": 5,
+      "cooldown_minutes": 15,
+      "enabled": true,
+      "labels": {
+        "category": "infrastructure",
+        "team": "platform",
+        "priority": "critical"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/critical-memory-usage",
+        "escalation": "Consider emergency restart procedures"
+      }
+    },
+    {
+      "name": "cpu_usage_sustained_high",
+      "description": "Sustained high CPU usage detected",
+      "condition": "cpu_usage_percent > 80",
+      "threshold": 80.0,
+      "severity": "warning",
+      "metric_name": "cpu_usage_percent",
+      "duration_minutes": 20,
+      "cooldown_minutes": 40,
+      "enabled": true,
+      "labels": {
+        "category": "infrastructure",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/high-cpu-usage"
+      }
+    },
+    {
+      "name": "service_health_degraded",
+      "description": "One or more services are in degraded state",
+      "condition": "degraded_services > 0",
+      "threshold": 0.0,
+      "severity": "warning",
+      "metric_name": "degraded_services",
+      "duration_minutes": 5,
+      "cooldown_minutes": 15,
+      "enabled": true,
+      "labels": {
+        "category": "services",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/service-health"
+      }
+    },
+    {
+      "name": "ssl_certificate_expiring",
+      "description": "SSL certificate will expire soon",
+      "condition": "ssl_cert_days_remaining < 30",
+      "threshold": 30.0,
+      "severity": "warning",
+      "metric_name": "ssl_cert_days_remaining",
+      "duration_minutes": 60,
+      "cooldown_minutes": 1440,
+      "enabled": true,
+      "labels": {
+        "category": "security",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/ssl-certificate-renewal"
+      }
+    },
+    {
+      "name": "backup_failure",
+      "description": "Database backup process has failed",
+      "condition": "backup_failures > 0",
+      "threshold": 0.0,
+      "severity": "error",
+      "metric_name": "backup_failures",
+      "duration_minutes": 30,
+      "cooldown_minutes": 120,
+      "enabled": true,
+      "labels": {
+        "category": "backup",
+        "team": "platform"
+      },
+      "annotations": {
+        "runbook": "https://docs.neurocompany.com/runbooks/backup-failures"
+      }
+    }
+  ],
+  "monitoring_settings": {
+    "evaluation_interval_seconds": 60,
+    "metrics_retention_hours": 168,
+    "health_check_timeout_seconds": 30,
+    "enable_debug_logging": false,
+    "alert_grouping_window_minutes": 5,
+    "max_alerts_per_rule": 10
+  },
+  "dashboards": {
+    "grafana": {
+      "enabled": false,
+      "url": "http://localhost:3001",
+      "api_key": "YOUR_GRAFANA_API_KEY"
+    },
+    "prometheus": {
+      "enabled": false,
+      "url": "http://localhost:9090",
+      "scrape_interval": "15s"
+    }
+  },
+  "integrations": {
+    "datadog": {
+      "enabled": false,
+      "api_key": "YOUR_DATADOG_API_KEY",
+      "app_key": "YOUR_DATADOG_APP_KEY"
+    },
+    "newrelic": {
+      "enabled": false,
+      "license_key": "YOUR_NEWRELIC_LICENSE_KEY"
+    },
+    "elk_stack": {
+      "enabled": false,
+      "elasticsearch_url": "http://localhost:9200",
+      "index_pattern": "neuroscan-logs-*"
+    }
+  }
+}

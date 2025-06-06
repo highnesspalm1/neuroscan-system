@@ -1,0 +1,153 @@
+Perfekt. Ich erstelle nun ein ausführliches Konzept für "NeuroScan" von NeuroCompany – ein modernes, Open-Source-basiertes Zertifizierungs- und Verifizierungssystem für physische Produkte. Das System umfasst eine zentrale Desktop-Software (Windows/macOS), eine gehostete Verifizierungsseite und PDF-Etikettengenerierung.
+
+Die Software wird als Premiumprodukt gestaltet – mit Glassmorphism-Design, NeuroCompany-Farben, sanften UI-Animationen und hoher Benutzerfreundlichkeit.
+
+Ich melde mich in Kürze mit dem vollständigen Konzept.
+
+
+# NeuroScan – Konzept für einen Premium-Zertifizierungsdienst
+
+## Einleitung und Ziel
+
+Das Projekt *NeuroScan* von NeuroCompany ist ein Premium-Zertifizierungsdienst für physische Produkte, der Offenheit und höchste Qualität vereint. Gegenstand ist die Echtheitsprüfung von Markenartikeln via QR-Code. Counterfeiting ist ein globales Problem in vielen Branchen (Pharma, Elektronik, Kosmetik etc.), das Umsatz, Markenvertrauen und Kundensicherheit gefährdet. NeuroScan soll hier Abhilfe schaffen: Die interne *NeuroScan Manager*-Desktop-Software ermöglicht es, Produktsiegel (Zertifikate) und Seriennummern zu erzeugen sowie PDF-Etiketten mit Markenlogo automatisch zu erstellen. Scannt ein Nutzer den QR-Code, öffnet sich die öffentliche Webseite *NeuroScan Verify*, die Produktdetails und Echtheitsstatus präsentiert.
+Das Ziel ist ein benutzerfreundliches, sicheres System auf Basis vollständig quelloffener Komponenten (z.B. Python, FastAPI, PySide6, reportlab), das sofort als Minimalversion (MVP) einsetzbar ist und bei Bedarf skaliert werden kann. Durch moderne *Glassmorphism*-UI mit neonartigen Akzenten (z.B. Electric Blue auf dunklem Hintergrund) soll ein hochwertiges Markenerlebnis geschaffen werden. Neuheiten sind dabei die voll integrierte Label-Erstellung, Echtzeit-Verifikation und optionale Shop-API-Erweiterung.
+
+## Zielgruppen und Nutzen
+
+**Zielgruppen:** Die Hauptnutzerschaft ist das interne Team von NeuroCompany (Produktmanager, Qualitätssicherung) sowie die angeschlossenen **Marken- oder Handelskunden**. Indirekt profitieren auch Endkunden und Handelspartner: Verbraucher, die ein Produkt scannen, erhalten sofort Gewissheit über Echtheit und Details. Händler (z.B. E-Commerce-Shops) können optional per API Anbindungen realisieren (z.B. Shopify-Plugin).
+**Nutzen:**
+
+* *Vertrauenssteigerung:* Markenkunden signalisieren ihren Käufern Produktauthentizität durch offizielle Zertifikate und Scan-Möglichkeit. Das schützt Umsatz und Markenimage.
+* *Einfache Handhabung:* Für Endverbraucher ist das System extrem niedrigschwellig – das Scannen mit dem Smartphone führt direkt zur Verifikationsseite, ohne Login oder Hürden. Die weite Verbreitung von Smartphones und QR-Code-Technik macht die Lösung heute praktisch universal nutzbar.
+* *Flexibilität:* NeuroCompany erhält ein zentrales Backend zur Verwaltung aller Kunden, Produkte und Zertifikate. Die Desktopsoftware bündelt alle Abläufe (Datenpflege, Label-Druck, Log-Auswertung) und minimiert manuellen Aufwand. Kunden brauchen nicht selbst IT-Expertise, sondern erhalten fertige Etiketten und Dashboards.
+* *Premium-Design:* Durch moderne Gestaltung (siehe UI/UX-Design) entsteht ein hochwertiger Markenauftritt von NeuroCompany und den Partnerlogos. Dies positioniert das Angebot als Premium-Dienst im Markt.
+
+## Systemarchitektur
+
+Das System gliedert sich in drei Kernelemente:
+
+* **Desktop-Verwaltungs-Software („NeuroScan Manager“):** Eine native Anwendung für Windows/macOS (PySide6), die ausschließlich intern bei NeuroCompany genutzt wird. Sie beherbergt lokal oder netzwerkseitig eine Datenbank zur Verwaltung von Kunden, Produkten und Zertifikaten. Über dieses Tool werden Seriennummern generiert, Etiketten erstellt und Scan-Logs abrufbar gemacht.
+* **Zentrales Backend/Web-API:** Eine Web-Server-Komponente (FastAPI), die Datenpersistenz, Scan-Verifikation und optionale APIs bereitstellt. Alle erfassten Objekte (Seriennummer, Status) liegen in einer zentralen Datenbank (zunächst SQLite, später PostgreSQL). Die Desktop-App kommuniziert über lokale Schnittstellen oder REST-API-Calls mit dem Backend.
+* **Öffentliche Verifizierungs-Webseite („NeuroScan Verify“):** Ein öffentlich erreichbares Frontend (React/Vue oder Server-Rendered) auf dem NeuroCompany-Server. Es erhält bei Scan-Anfrage die Seriennummer und zeigt Produktinfo, Logos und Echtheitsstatus. Dieses Portal benötigt keinen Login und lädt in Echtzeit aus der Datenbank.
+
+Die Komponenten laufen in einer Container-basierten Cloud-Infrastruktur (z.B. Docker/GCP), getrennt nach Webfrontend, API-Server und Datenbank. Für Entwicklung und erste Auslieferung reicht SQLite (serverlose, selbständige Open-Source-Datenbank). Bei steigenden Datenmengen und Last wird zu PostgreSQL migriert (leistungsfähiges, konformes ORDBMS mit hoher Stabilität). Die Kommunikation erfolgt per HTTPS, so dass alle Daten (inklusive QR-Links) verschlüsselt übertragen werden.
+
+## Funktionen der Desktopsoftware
+
+Die Desktop-App *NeuroScan Manager* bietet folgende Kernfunktionen:
+
+* **Kunden- und Produktverwaltung:** Erfassung von Marken-/Handelskunden (inkl. Logo) und deren produzierten Artikeln. Neue Kunden, Produktvarianten und Zertifikatvorlagen lassen sich bequem per Formular hinzufügen.
+* **Zertifikats- und Seriennummerngenerator:** Erstellung digitaler Zertifikate mit definierten Gültigkeitsbereichen. Automatische Generierung eindeutiger Seriennummern (pro Kunde/Produkt, inkrementell oder zufällig) zur Vermeidung von Doppelvergaben.
+* **Etikettengenerierung:** Vollautomatisches Erstellen von druckfertigen PDF-Etiketten (Stickerformat) für jeden Datensatz. Jedes Etikett enthält QR-Code, Serien-ID, Kundenlogo und Produktname. Die Anordnung passt sich an verschiedene Formate an (z.B. A4 mehrsprachig) und lässt sich ggf. in Templates anpassen.
+* **Scan-Log und Reporting:** Jeder Scan eines QR-Codes wird im System geloggt (Zeitstempel, ggf. Geolokation/IP). Die Software zeigt Auswertungen (z.B. Scan-Zahlen pro Produkt/Kunde, letzter Scan, Geo-Heatmap) zur Erkennung von ungewöhnlichen Aktivitäten.
+* **Hostingstatus und Wartung:** Optionen zum Aktivieren/Deaktivieren von Zertifikaten (um den Authentifizierungsstatus zu sperren). Backup- und Datenbank-Tools zur Datensicherung.
+* **Bedienkomfort:** Die UI ist ansprechend gestaltet (siehe Design unten), mit übersichtlichen Dashboards, Tabellenfilter und kontextsensitive Hilfen. Alle Aktionen sind intuitiv bedienbar, um Einarbeitungszeit zu minimieren.
+
+## Funktionen der Webverifizierung
+
+Die *NeuroScan Verify*-Webseite fungiert als Produkt-Echtheitsprüfung und Marketing-Tool für Endkunden:
+
+* **Automatisierte QR-Verifikation:** Ein Gerät scannt den QR-Code auf der Produktverpackung und öffnet automatisch die Verifizierungsseite mit der kodierten Seriennummer. Per API wird die Seriennummer serverseitig geprüft.
+* **Anzeige von Produkt- und Zertifikatsinfo:** Auf der Seite werden der Produktname, ggf. ein Produktbild, das Logo des Markeninhabers und der Serienstatus (z.B. „Echtes Produkt“ oder „Ungültiger Code“) gezeigt. Details wie Herstellungsdatum oder Chargennummer können ergänzt werden. Die Seite verwendet wieder das neurospezifische Design (siehe UI/UX).
+* **Echtheits-Status und Warnung:** Fällt der Code auf eine gefälschte oder deaktivierte Seriennummer (z.B. doppelter Scan desselben Codes an anderen Orten), wird ein Warnhinweis angezeigt. NeuroScan kann optionale CAPTCHAs oder zeitlich begrenzte Codes verwenden, um automatisiertes Auslesen zu erschweren.
+* **Keine Login-Hürde:** Der Service ist öffentlich – Verbraucher müssen sich weder registrieren noch ein Konto erstellen. Die verifizierten Informationen sind frei zugänglich, was die Nutzerfreundlichkeit stark erhöht.
+* **API-Unterstützung:** Zusätzlich bietet das Backend eine REST-API. So können externe Shops oder Apps in Echtzeit den Authentifizierungsstatus abfragen und das Ergebnis z.B. im Checkout anzeigen. Die Endpunkte sind dokumentiert und können z.B. per FastAPI-Client genutzt werden.
+
+Die zentrale Hosting-Lösung sorgt dafür, dass alle Verifikationsanfragen an einem Ort landen. Durch die Verwendung **serialisierter QR-Codes** ist sichergestellt, dass nur eindeutige, gegen Kopieren geschützte Codes echte Erfolge erzielen. So gilt: Jeder validierte Seriencode repräsentiert genau ein zertifiziertes Produkt.
+
+## PDF-/Etikettenerzeugung
+
+Die Erstellung von hochwertigen Produkt-Etiketten erfolgt automatisch über Python-Bibliotheken: Per *ReportLab* werden PDF-Seiten mit den notwendigen Elementen aufgebaut. Dabei kommen folgende Komponenten zum Einsatz:
+
+* **QR-Code-Generierung:** Die Python-Bibliothek *qrcode* erstellt den QR-Code aus der Seriennummer. Der Code ist idealerweise statisch, kann aber mit eingebetteter Datenstruktur signiert werden (z.B. HMAC), um Fälschungen zu erschweren.
+* **Layout und Branding:** Das PDF-Template platziert QR-Code, Serien-ID, Kundenlogo und Produktbezeichnung in vorgegebenen Positionen. Schriftarten, Farben und Grafiken orientieren sich am Corporate Design des Kunden und der Marke NeuroCompany. Ein Beispielaufbau ist zweispaltig: links Logo/QR, rechts Text.
+* **Auslieferung:** Die generierten PDF-Etiketten können dem Kunden digital übermittelt oder über einen Partnerdruck-Service gedruckt und geliefert werden. Mehrseitige PDFs unterstützen Chargen-Labels. Die Etiketten sind druckoptimiert (CMYK, vektorisiertes Logo) und lassen sich auf verschiedenen Materialen (Papier, Folie) drucken.
+* **Automatisierung:** In der Desktop-App ist die Etiketten-Erstellung per Knopfdruck verfügbar. Alternativ kann über einen Kommandoworkflow oder API ein On-Demand-Druck ausgelöst werden. So entstehen Arbeitsabläufe wie „Produkt XY anlegen – Label generieren – an Drucker senden“.
+
+Durch die Verwendung bewährter Open-Source-Tools (z.B. reportlab und qrcode) bleibt das System flexibel und lizenzkostenfrei. Bei Updates können Layout-Vorlagen einfach angepasst werden, da sie programmatisch erstellt werden.
+
+## UI/UX-Design (Glassmorphism)
+
+Das visuelle Erscheinungsbild von NeuroScan folgt dem Trend des **Glassmorphism**: Transparente, leicht verschwommene Oberflächenelemente („Frosted Glass“) liegen auf einem dunkel gehaltenen Hintergrund. Dieser Effekt erzeugt Tiefe und Eleganz. Durch *Hintergrundunschärfe* (Blur-Filter) lassen UI-Karten in Interfaces so wirken, als schweben sie auf einer gläsernen Oberfläche. Akzentfarben in Neonblau oder -grün sorgen für einen futuristischen Look und heben Schaltflächen und wichtige Informationen hervor.
+
+Wichtige Designmerkmale:
+
+* **Transparente Panels:** Dialoge und Info-Karten haben einen teiltransparenten, milchig-weißen Hintergrund mit starker Blur-Überlagerung. Das dahinterliegende Hintergrundbild oder -verlauf schimmert durch, was einen Glas-Effekt erzeugt.
+* **Sanfte Schatten und Animationen:** Leichte Schatten unter den Panels bieten Kontrast zum dunklen Hintergrund. UI-Elemente werden animiert eingefadet oder heben sich durch subtile Hover-Effekte ab. Button-Animationen (Farbverlaufsübergang, leichte Bewegung) erhöhen die Wertigkeit.
+* **Farbpalette:** Wir schlagen ein dunkles Grau/Schwarz (#111820) als Basis vor, kombiniert mit leuchtendem Cyan/Neonblau (#00E5FF) und Akzent-Grün (#39FF14). Diese Farben passen zum futuristischen Markennamen „Neuro“ und passen zu High-Tech-Elektronik. Weißer Text hat auf diesem Hintergrund hohe Lesbarkeit.
+* **Konsistente Gestaltung:** Desktop-App und Web-Applikation verwenden identische Farben, Schriften (z.B. klare Sans-Serif), Icons und abgerundete Formen, um ein einheitliches Erscheinungsbild zu schaffen. Beispielsweise können Stil-Vorlagen (CSS für Web, QSS/QML für PySide6) wiederverwendet werden.
+* **Beispielansicht:** Beim Aufrufen von NeuroScan Verify könnte der obere Bereich ein halbtransparentes Banner mit Kundenlogo zeigen, darunter die Produktdetails auf einem “Frostglas”-Panel. Animationen wie ein kurzes Pulsieren des Logos oder Hovereffekte auf Schaltflächen werten die Seite zusätzlich auf.
+
+Dieses moderne UI-Konzept erhöht die Nutzerzufriedenheit und unterstreicht die High-End-Positionierung von NeuroScan. Gleichzeitig wird durch klare Kontraste und intuitive Elemente (große Buttons, klare Labels) die Benutzerführung einfach gehalten.
+
+## API-Erweiterbarkeit
+
+Langfristig wird *NeuroScan* eine RESTful-API bieten (über FastAPI realisiert). Dadurch können Drittsysteme angebunden werden:
+
+* **Produkt-Registrierung:** API-Endpunkt zum automatischen Anlegen neuer Seriennummern oder Zertifikate (z.B. wenn ein Shop per Webhook neue Bestellungen meldet).
+* **Echtheits-Check:** Ein `/verify`-Endpunkt, der JSON mit Seriennummer entgegennimmt und den Authentifizierungsstatus zurückliefert. So kann ein Shopify-Plugin beim Checkout direkt anzeigen, ob ein Artikel echt zertifiziert ist.
+* **Statistik/Logs:** Endpunkte zum Abrufen von Scan-Log-Daten (z.B. für Analysetools) oder zum Generieren von Label-Batches.
+* **Authentifizierung:** Zugriffe auf die API gesichert durch Tokens oder OAuth. Dadurch können Kunden in abgeschlossenen Systemen (eigener Shop, ERP) nur bestimmte Funktionen nutzen.
+  Dank FastAPI kann jede neue Funktion schnell und sicher entwickelt werden. Die API-Dokumentation (OpenAPI/Swagger) wird automatisch aus dem Code generiert. Durch diese Erweiterbarkeit passt sich NeuroScan leicht neuen Marktbedürfnissen an (z.B. Anbindung an Blockchain-Tracking oder eLabel-Plattformen).
+
+## Hostingmodell & Infrastruktur
+
+NeuroScan wird als Cloud-Service gehostet, um Verfügbarkeit und Skalierbarkeit zu gewährleisten:
+
+* **Server-Architektur:** Getrennte Container/VMs für den API-Server (FastAPI mit Uvicorn), die Datenbank und das Web-Frontend. Docker Compose oder Kubernetes kann zum Einsatz kommen. Backend und Datenbank laufen auf Linux-Servern, idealerweise in einem Rechenzentrum mit hoher Ausfallsicherheit.
+* **Datenbank:** Zunächst SQLite für MVP (einfacher Betrieb ohne DB-Admin). Später PostgreSQL als Service (z.B. AWS RDS/GCP Cloud SQL) für hohe Transaktionszahlen und Sicherheit. Regelmäßige Backups sind konfiguriert.
+* **Domain & SSL:** Die Verifikationsseite läuft unter einer eindeutigen Domain (z.B. `verify.neuroscan.com`) mit TLS-Verschlüsselung (Let’s Encrypt). Auch interne API-Zugriffe erfolgen verschlüsselt.
+* **Lastverteilung:** Beim Wachstum können Last-Balancer eingesetzt werden. Caching (z.B. für statische Produktbilder) verbessert die Performance. Ein CDN ist möglich für Assets.
+* **Monitoring & Wartung:** Logging- und Monitoring-Tools (Prometheus/Grafana, ELK) überwachen Serverzustand, API-Performance und Fehler. Sicherheitsupdates werden zeitnah eingespielt.
+
+Insgesamt sorgt das Cloud-Modell dafür, dass NeuroScan zuverlässig erreichbar ist und flexibel mitwächst. Für das MVP genügt zunächst eine einfache Instanzlandschaft; zukünftige Skalierung (Multi-Region, Microservices) ist aber vorbereitet.
+
+## Sicherheit, Datenschutz & Lizenzierung
+
+Das NeuroScan-System verfolgt „Security by Design“ und Datenschutzprinzipien:
+
+* **Sichere Übertragung:** Alle Dienste (Desktop-App zu API, Webzugriff) nutzen HTTPS/TLS. SSL-Zertifikate werden regelmäßig erneuert. Bei Bedarf können zusätzliche Verschlüsselungsschichten (VPN oder SSH-Tunnel) intern eingesetzt werden.
+* **Code-Sicherheit:** Durch den Einsatz von Open-Source-Software profitieren wir von transparenter Community-Prüfung. Kritische Daten (z.B. private Schlüssel für digitale Signaturen) werden sicher aufbewahrt. Die QR-Codes können beispielsweise mit einem HMAC-Signaturfeld versehen werden, damit kopierte Codes nicht als authentisch erkannt werden.
+* **Datenminimalprinzip:** In der öffentlichen Verifizierung werden keine personenbezogenen Daten erhoben – lediglich Produktinfos und Seriennummer. Scan-Logs protokollieren IP-Adresse und Zeit, um Missbrauch aufzuspüren, enthalten aber keine Kunden- oder Produktdaten. Auch diese Logs werden DSGVO-konform behandelt (z.B. automatisches Löschen älterer Einträge).
+* **Lizenzen:** Alle Komponenten sind quelloffen. Beispielsweise unterliegen FastAPI, SQLite und PostgreSQL freien Lizenzen (MIT bzw. Postgres-Lizenz). Die Desktop-GUI PySide6 steht unter LGPLv3/GPL. Unsere selbstentwickelten Teile können unter einer Business-kompatiblen Open-Source-Lizenz (z.B. MIT oder Apache 2.0) stehen, was Transparenz schafft und Weiterentwicklung ermöglicht.
+* **Mehrstufige Authentifizierung:** Der Zugang zur NeuroScan-Manager-Software ist intern geregelt (z.B. Windows-Login, zusätzliche Passwort-Abfrage). Öffentlich zugängliche Interfaces (QR-Verifikation) benötigen keinen Login, aber zum Administrationsbereich wird sichergestellt, dass nur berechtigte Mitarbeiter Zugriff haben.
+
+So erfüllt NeuroScan Sicherheitsstandards für digitale Güter. Das offene Design minimiert Risiken und ermöglicht gleichzeitig, dass Partner und Gutachter den Code einsehen können.
+
+## Open-Source-Komponentenübersicht
+
+NeuroScan setzt konsequent auf freie Software und Standardbibliotheken. Wichtige Komponenten im Überblick:
+
+* **Programmiersprache:** Python 3.x (PSF-Lizenz) – gut etabliert für Backend, Desktop und Scripting.
+* **Desktop-UI:** Qt for Python (PySide6) – freie Version unter LGPLv3/GPL. Ermöglicht plattformübergreifende GUI mit modernen Widgets.
+* **Backend-Framework:** FastAPI (MIT-Lizenz) – extrem leistungsfähiges, asynchrones Web-Framework für Python. Unterstützt REST-APIs und automatische Dokumentation.
+* **Datenbanken:** SQLite (öffentliche Domäne) für die MVP-Phase. PostgreSQL (Postgres-Lizenz) als skalierbares Hochleistungs-RDBMS. Beide bieten ACID-Transaktionen und weite Portabilität.
+* **PDF-Generierung:** ReportLab (BSD-Lizenz) – Standardbibliothek zur dynamischen Erstellung von PDFs und Vektorgrafiken.
+* **QR-Code-Erzeugung:** python-qrcode (BSD-Lizenz) – erzeugt QR-Bilder in verschiedenen Formaten.
+* **Web-Frontend:** Moderne Webtechnologien (z.B. React/Vue, Tailwind CSS) können eingesetzt. Alternativ serverseitiges Rendering mit Jinja2 oder Django-Templates (MIT-Lizenz).
+* **Sonstiges:** SQLAlchemy oder PonyORM (Database-ORMs), Alembic für DB-Migrationen, Uvicorn als ASGI-Server, Jinja2 (Templates), Pillow (Bildbearbeitung). Für CI/CD und Deployment sind Tools wie Docker, GitHub Actions und Terraform denkbar.
+
+Diese Bibliotheken sind alle unter anerkannten Open-Source-Lizenzen verfügbar und haben große Communities. Das garantiert langfristige Wartbarkeit und erlaubt es, den gesamten Stack unabhängig zu betreiben.
+
+## Monetarisierung & Preismodell
+
+NeuroScan richtet sich an Unternehmen, die ihre Produkte authentifizieren möchten. Mögliche Geschäftsmodelle:
+
+* **Abo-Modell (Subscription):** Monatliche oder jährliche Gebühr pro Marke/Produktlinie. Unterschiedliche Stufen bieten mehr Seriennummern-Kapazität oder zusätzliche Funktionen (z.B. API-Zugriffe). Beispielsweise könnte ein Basis-Paket 1.000 Scans/Monat und 10.000 Labels umfassen, ein Premium-Paket unbegrenzte Nutzung und Support.
+* **Nutzenbasiertes Modell (Pay-per-Use):** Abrechnung pro generiertem QR-Code oder pro Verifikation. Gerade kleine Hersteller könnten so ohne Festkosten starten. Alternativ ist eine Kombination denkbar (Flatrate + variable Gebühr).
+* **Setup- und Wartungsgebühr:** Einmalige Einrichtungspauschale (inkl. Integration und Schulung) plus monatliche Service-Gebühr.
+* **White-Label/Enterprise:** Für Großkunden kann eine maßgeschneiderte Version (z.B. eigenes Portal-Branding) gegen Aufpreis angeboten werden. Auch eine Lizenzierung der On-Premise-Version mit SLA wäre denkbar.
+
+Die Preise orientieren sich am Mehrwert: Marken zahlen für gesteigertes Kundenvertrauen und Schutz vor Fälschungen. Ähnliche Services (Scantrust, etc.) verlangen deutlich fünf- bis sechsstellige Beträge jährlich für große Volumina. Ein flexibles Preismodell erhöht die Akzeptanz bei verschiedenen Kundengrößen.
+
+## Projekt-Roadmap & MVP-Planung
+
+Die Umsetzung erfolgt in Phasen:
+
+1. **MVP-Phase (0–3 Monate):** Basis-Backend (FastAPI) mit SQLite-Datenbank, einfache REST-API für Verifikation. Grundlegende PySide6-Desktop-App mit Kunden-/Produktverwaltung und einseitiger Label-Generierung. Einfache Webverifizierungsseite mit Produktanzeige („Echt/ungültig“).
+2. **UI/UX-Feinschliff (3–6 Monate):** Integration des Glassmorphism-Designs in Desktop und Web. Animierte Effekte und responsive Layouts. Logo-Upload, mehrseitige PDF-Labels, Exportfunktionen.
+3. **Skalierung & Deployment (6–9 Monate):** Migration zu PostgreSQL, Containerisierung, Domain-Setup mit HTTPS. Einrichtung von CI/CD und Monitoring. Automatisierte Backups und Tests.
+4. **API-Integration (9–12 Monate):** Aufbau der erweiterten API-Endpunkte für Drittsysteme (inkl. Authentifizierung). Beispiele: Shopify-Plugin, Mobile-Verifikation-App. Entwickeln von SDKs oder Webhooks.
+5. **Advanced Features & Skalierung:** Erweiterungen wie mehrsprachige Oberfläche, umfangreichere Analytics (KI-gestützte Anomalie-Erkennung), Hochverfügbarkeitsbetrieb. Kooperationen mit Druckdienstleistern oder Logistik-APIs. Eventuelle Open-Source-Community einbeziehen.
+
+Jede Phase liefert ein lauffähiges Produkt (Iterative Entwicklung). So kann NeuroCompany früh Kunden onboarden und Feedback einarbeiten. Das Konzept garantiert, dass das MVP robust ist, aber gleichzeitig flexibel bleibt für künftige Anforderungen. Alle Meilensteine werden dokumentiert und priorisiert, um einen klaren Fahrplan zu gewährleisten.

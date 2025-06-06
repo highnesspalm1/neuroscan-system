@@ -1,0 +1,49 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# This file is automatically loaded when running docker-compose commands
+
+services:
+  backend:
+    environment:
+      - DEBUG=true
+      - AUTO_RELOAD=true
+      - SHOW_DOCS=true
+    volumes:
+      - ./BackendAPI:/app
+      - backend_dev_logs:/app/logs
+    ports:
+      - "8001:8000"  # Additional port for direct access
+    
+  frontend:
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_ENVIRONMENT=development
+    volumes:
+      - ./WebFrontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:80"  # Additional port for direct access
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    
+  postgres:
+    environment:
+      - POSTGRES_DB=neuroscan_dev_db
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    
+  redis:
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    volumes:
+      - redis_dev_data:/data
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+  backend_dev_logs:
+    driver: local

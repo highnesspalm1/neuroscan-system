@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="4.689" timestamp="2025-06-02T15:56:53.621824+02:00" hostname="DESKTOP-2NQNLSV"><testcase classname="" name="tests.test_api" time="0.000"><error message="collection failure">ImportError while importing test module 'F:\NeuroCompany\NeuroScan\BackendAPI\tests\test_api.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\networks.py:946: in import_email_validator
+    import email_validator
+E   ModuleNotFoundError: No module named 'email_validator'
+
+The above exception was the direct cause of the following exception:
+C:\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_api.py:19: in &lt;module&gt;
+    from main import app
+main.py:18: in &lt;module&gt;
+    from app.routes import admin, verify, api_v1, pdf_labels, websockets, monitoring, documentation, webhooks, websocket
+app\routes\__init__.py:7: in &lt;module&gt;
+    from . import verify, admin, api_v1
+app\routes\verify.py:13: in &lt;module&gt;
+    from ..schemas import VerificationResponse, ScanLogCreate
+app\schemas\__init__.py:13: in &lt;module&gt;
+    class CustomerBase(BaseModel):
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_model_construction.py:237: in __new__
+    complete_model_class(
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_model_construction.py:597: in complete_model_class
+    schema = gen_schema.generate_schema(cls)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:706: in generate_schema
+    schema = self._generate_schema_inner(obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:999: in _generate_schema_inner
+    return self._model_schema(obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:832: in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1201: in _generate_md_field_schema
+    common_field = self._common_field_schema(name, field_info, decorators)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1367: in _common_field_schema
+    schema = self._apply_annotations(
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:2279: in _apply_annotations
+    schema = get_inner_schema(source_type)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:2261: in inner_handler
+    schema = self._generate_schema_inner(obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1004: in _generate_schema_inner
+    return self.match_type(obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1118: in match_type
+    return self._match_generic_type(obj, origin)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1141: in _match_generic_type
+    return self._union_schema(obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:1429: in _union_schema
+    choices.append(self.generate_schema(arg))
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:703: in generate_schema
+    schema = self._generate_schema_from_get_schema_method(obj, obj)
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\_internal\_generate_schema.py:895: in _generate_schema_from_get_schema_method
+    schema = get_schema(
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\networks.py:986: in __get_pydantic_core_schema__
+    import_email_validator()
+C:\Users\utku\AppData\Roaming\Python\Python313\site-packages\pydantic\networks.py:948: in import_email_validator
+    raise ImportError('email-validator is not installed, run `pip install pydantic[email]`') from e
+E   ImportError: email-validator is not installed, run `pip install pydantic[email]`</error></testcase></testsuite></testsuites>
