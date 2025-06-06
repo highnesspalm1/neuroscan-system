@@ -8,11 +8,7 @@ import logging
 from sqlalchemy import text, inspect
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.database import engine, Base
-from app.models.user import User
-from app.models.product import Product
-from app.models.certificate import Certificate
-from app.models.verification_log import VerificationLog
-from app.models.audit_log import AuditLog
+from app.models import Customer, Product, Certificate, ScanLog, APIKey
 
 logger = logging.getLogger(__name__)
 
