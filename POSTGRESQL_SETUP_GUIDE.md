@@ -3,7 +3,8 @@
 ## 🎯 Current Status
 - ✅ **Frontend**: LIVE at `https://neuroscan-system.vercel.app`
 - ✅ **Backend**: LIVE at `https://neuroscan-api.onrender.com`
-- ❌ **Database**: SQLiteError - table conflicts need PostgreSQL migration
+- ✅ **PostgreSQL Database**: CREATED - `neuroscan-db` (Frankfurt, EU Central)
+- ⏳ **Integration**: Need to connect backend to PostgreSQL
 
 ## 🗄️ Step 1: Set up PostgreSQL on Render
 
@@ -18,17 +19,18 @@
    - **PostgreSQL Version**: 15
    - **Plan**: Free
 
-### 1.2 Get Database Credentials
-After creation, Render provides these details:
+### 1.2 Get Database Credentials ✅ COMPLETED
+Your PostgreSQL database is ready with these details:
 ```
 Database: neuroscan
-Host: [hostname].oregon-postgres.render.com
+Host: dpg-d11h3lodl3ps73cpllag-a.frankfurt-postgres.render.com
 Port: 5432
 Username: neuroscan
-Password: [auto-generated]
+Password: VRSsve3gwWASZNj0mPsOjXTnJVygYiUk
+Region: Frankfurt (EU Central)
 ```
 
-**IMPORTANT**: Copy the full `DATABASE_URL` connection string from Render dashboard!
+**DATABASE_URL**: `postgresql://neuroscan:VRSsve3gwWASZNj0mPsOjXTnJVygYiUk@dpg-d11h3lodl3ps73cpllag-a/neuroscan`
 
 ## ⚙️ Step 2: Configure Backend Environment Variables
 
@@ -38,7 +40,7 @@ Password: [auto-generated]
 3. Add/Update these variables:
 
 ```bash
-DATABASE_URL=[Full PostgreSQL connection string from Step 1.2]
+DATABASE_URL=postgresql://neuroscan:VRSsve3gwWASZNj0mPsOjXTnJVygYiUk@dpg-d11h3lodl3ps73cpllag-a/neuroscan
 ENVIRONMENT=production
 DEBUG=false
 JWT_SECRET_KEY=neuroscan-super-secret-jwt-key-2024-render-deployment
