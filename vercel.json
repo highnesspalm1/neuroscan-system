@@ -1,22 +1,20 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "WebFrontend/package.json",
-      "use": "@vercel/node"
-    }
-  ],
+  "framework": "vite",
+  "buildCommand": "cd WebFrontend && npm ci && npm run build",
+  "outputDirectory": "WebFrontend/dist",
+  "installCommand": "cd WebFrontend && npm ci",
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "WebFrontend/$1"
+      "dest": "/index.html"
     }
   ],
   "env": {
     "VITE_API_URL": "https://neuroscan-api.onrender.com",
     "VITE_ENVIRONMENT": "production"
-  },
-  "framework": "vite",
-  "buildCommand": "cd WebFrontend && npm install && npm run build",
-  "outputDirectory": "WebFrontend/dist"
+  }
 }
