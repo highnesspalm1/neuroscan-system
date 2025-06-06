@@ -75,9 +75,8 @@ app = FastAPI(
     license_info={
         "name": "Proprietary",
         "url": "https://neurocompany.com/license"
-    },
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    },    docs_url="/docs",
+    redoc_url="/redoc",
     openapi_tags=[        {"name": "verification", "description": "Product verification operations"},
         {"name": "admin", "description": "Administrative operations"},
         {"name": "api", "description": "Core API operations"},

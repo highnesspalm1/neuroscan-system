@@ -1,0 +1,65 @@
+{
+  "test_timestamp": "2025-06-06T18:22:09.406620",
+  "backend_url": "https://neuroscan-api.onrender.com",
+  "frontend_url": "https://neuroscan-system.vercel.app",
+  "overall_status": "ISSUES_DETECTED",
+  "tests_passed": 3,
+  "tests_total": 7,
+  "success_rate": "42.9%",
+  "test_results": [
+    {
+      "test": "Backend Health Check",
+      "status": "\u2705 PASS",
+      "details": "Database: Unknown",
+      "timestamp": "2025-06-06T18:22:01.442489"
+    },
+    {
+      "test": "PostgreSQL Database",
+      "status": "\u274c FAIL",
+      "details": "Status: connected, Type: Unknown",
+      "timestamp": "2025-06-06T18:22:02.555717"
+    },
+    {
+      "test": "API Documentation",
+      "status": "\u2705 PASS",
+      "details": "Swagger docs accessible",
+      "timestamp": "2025-06-06T18:22:03.657691"
+    },
+    {
+      "test": "CORS Configuration",
+      "status": "\u274c FAIL",
+      "details": "No CORS headers found",
+      "timestamp": "2025-06-06T18:22:04.743166"
+    },
+    {
+      "test": "Frontend Accessibility",
+      "status": "\u274c FAIL",
+      "details": "HTTP 404",
+      "timestamp": "2025-06-06T18:22:05.994023"
+    },
+    {
+      "test": "API Endpoint /",
+      "status": "\u2705 PASS",
+      "details": "Root endpoint",
+      "timestamp": "2025-06-06T18:22:07.122486"
+    },
+    {
+      "test": "API Endpoint /health",
+      "status": "\u2705 PASS",
+      "details": "Health check",
+      "timestamp": "2025-06-06T18:22:07.221548"
+    },
+    {
+      "test": "API Endpoint /docs",
+      "status": "\u2705 PASS",
+      "details": "API documentation",
+      "timestamp": "2025-06-06T18:22:07.316865"
+    },
+    {
+      "test": "Response Time",
+      "status": "\u2705 PASS",
+      "details": "88ms (Good performance)",
+      "timestamp": "2025-06-06T18:22:08.405467"
+    }
+  ]
+}
