@@ -24,7 +24,7 @@ Migration des lokalen NeuroScan-Systems auf kostenfreie Cloud-Plattformen:
 git init
 
 # Git-Konfiguration
-git config user.name "NeuroCompany"
+git config user.name "highnesspalm1"
 git config user.email "highnesspalm@gmail.com"
 
 # Alle Dateien hinzufügen
@@ -47,7 +47,7 @@ git commit -m "Initial NeuroScan cloud deployment setup"
 
 ```powershell
 # Remote Repository hinzufügen
-git remote add origin https://github.com/IHR_USERNAME/neuroscan-system.git
+git remote add origin https://github.com/highnesspalm1/neuroscan-system.git
 
 # Code hochladen
 git branch -M main
@@ -65,23 +65,19 @@ git push -u origin main
 
 ### 2. Service Konfiguration
 - **Name**: `neuroscan-api`
-- **Environment**: `Python 3`
-- **Build Command**: 
-  ```bash
-  cd BackendAPI && pip install -r requirements.txt
-  ```
-- **Start Command**: 
-  ```bash
-  cd BackendAPI && uvicorn main:app --host 0.0.0.0 --port $PORT
-  ```
+- **Language**: `Docker`
+- **Branch**: `main`
+- **Region**: `Oregon (US West)`
+- **Root Directory**: `BackendAPI`
+- **Dockerfile Path**: `./Dockerfile`
 
 ### 3. Umgebungsvariablen setzen
 ```
 ENVIRONMENT=production
 DEBUG=false
+JWT_SECRET_KEY=neuroscan-super-secret-jwt-key-2024-render-deployment
+CORS_ORIGINS=https://neuroscan-system.vercel.app,https://localhost:3000
 DATABASE_URL=[wird automatisch von PostgreSQL DB gesetzt]
-JWT_SECRET_KEY=[generiere sicheren Schlüssel]
-CORS_ORIGINS=https://neuroscan-frontend.vercel.app
 ```
 
 ### 4. PostgreSQL Datenbank hinzufügen
@@ -110,6 +106,8 @@ CORS_ORIGINS=https://neuroscan-frontend.vercel.app
 VITE_API_URL=https://neuroscan-api.onrender.com
 VITE_ENVIRONMENT=production
 ```
+
+**✅ Frontend Status**: Bereits deployed unter `neuroscan-system.vercel.app`
 
 ---
 
