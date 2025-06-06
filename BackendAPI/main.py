@@ -17,6 +17,7 @@ from pathlib import Path
 from app.core.config import settings
 from app.core.database import engine, SessionLocal, Base
 from app.core.security import RateLimitMiddleware
+from app.core.database_init import init_database, check_database_health
 from sqlalchemy import text
 from app.routes import admin, verify, api_v1, pdf_labels, websockets, monitoring, documentation, webhooks_simple as webhooks, websocket, enhanced_api, monitoring_v2
 from app.routes.monitoring import track_request_metrics
@@ -174,14 +175,28 @@ async def health_check():
     try:
         # Test database connection
         db = SessionLocal()
-        db.execute(text("SELECT 1"))
-        db.close()
+        try:
+            db.execute(text("SELECT 1"))
+            db_status = "connected"
+            
+            # Check if we're using PostgreSQL
+            if "postgresql" in str(engine.url):
+                db_type = "PostgreSQL"
+            else:
+                db_type = "SQLite"
+                
+        except Exception as e:
+            db_status = f"error: {str(e)}"
+            db_type = "unknown"
+        finally:
+            db.close()
         
         return {
             "status": "healthy",
             "environment": os.getenv("ENVIRONMENT", "development"),
             "api_version": "1.0.0",
-            "database": "connected",
+            "database": db_status,
+            "database_type": db_type,
             "timestamp": "2025-06-06T12:00:00Z"
         }
     except Exception as e:
