@@ -26,10 +26,23 @@ from app.routes.webhooks_simple import webhook_manager
 from app.core.versioning import version_manager
 from app.core.alerting import alert_manager
 from app.core.observability import observability_dashboard
+from app.core.database_init import init_database, check_database_health
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Initialize database with proper error handling
+try:
+    logger.info("Initializing database...")
+    if init_database():
+        logger.info("Database initialized successfully")
+    else:
+        logger.error("Database initialization failed")
+except Exception as e:
+    logger.error(f"Critical database error: {e}")
+    # Continue startup - let the app handle database errors gracefully
 
 # Initialize FastAPI app
 app = FastAPI(
