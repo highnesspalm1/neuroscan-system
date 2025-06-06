@@ -26,9 +26,8 @@ services:
           name: neuroscan-redis
           property: connectionString
       - key: JWT_SECRET_KEY
-        generateValue: true
-      - key: CORS_ORIGINS
-        value: https://verify.neuroscan.vercel.app,https://portal.neuroscan.vercel.app
+        generateValue: true      - key: CORS_ORIGINS
+        value: https://neuroscan-system.vercel.app,https://verify.neuroscan.vercel.app,https://portal.neuroscan.vercel.app,http://localhost:3000,http://localhost:5173
 
   # PostgreSQL Database
   - type: postgres
