@@ -1,5 +1,5 @@
 -- Database Migration: Add new fields to products table
--- Date: 2025-06-07 20:58:30
+-- Date: 2025-06-07 21:39:18
 -- Purpose: Add SKU, Category, Price, and Updated_at fields
 
 -- Add new columns to products table
