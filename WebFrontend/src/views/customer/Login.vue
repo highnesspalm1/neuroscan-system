@@ -43,12 +43,50 @@
               placeholder="Password"
             />
           </div>
-        </div>
-
-        <!-- Error Message -->
+        </div>        <!-- Error Message -->
         <div v-if="error" class="rounded-md bg-red-50 p-4">
           <div class="flex">
             <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                Login Failed
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <p>{{ error }}</p>
+                <p v-if="isTimeoutError" class="mt-2 text-xs">
+                  💡 <strong>Tip:</strong> The service might be starting up. 
+                  <button @click="wakeUpAPI" class="underline hover:no-underline">
+                    Click here to wake up the API
+                  </button> and try again.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API Status -->
+        <div v-if="isWakingUp" class="rounded-md bg-blue-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                Waking up API service...
+              </h3>
+              <p class="mt-1 text-sm text-blue-700">
+                Please wait while the backend service starts up. This may take 30-60 seconds.
+              </p>
+            </div>
+          </div>
+        </div>
               <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
               </svg>
@@ -92,6 +130,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomerStore } from '@/stores/customer'
+import api from '@/api/index'
 
 const router = useRouter()
 const customerStore = useCustomerStore()
@@ -102,11 +141,37 @@ const form = ref({
   password: ''
 })
 
+// Wake-up state
+const isWakingUp = ref(false)
+
 // Computed properties
 const isLoading = computed(() => customerStore.isLoading)
 const error = computed(() => customerStore.error)
+const isTimeoutError = computed(() => {
+  return error.value && (
+    error.value.includes('timeout') || 
+    error.value.includes('Network Error') ||
+    error.value.includes('ERR_NETWORK') ||
+    error.value.includes('Failed to fetch')
+  )
+})
 
 // Methods
+const wakeUpAPI = async () => {
+  try {
+    isWakingUp.value = true
+    await api.get('/health')
+    // Wait a moment for the service to fully wake up
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    isWakingUp.value = false
+    // Clear any previous error
+    customerStore.error = null
+  } catch (err) {
+    console.log('Wake up request sent, service should be starting...')
+    isWakingUp.value = false
+  }
+}
+
 const handleLogin = async () => {
   try {
     await customerStore.login(form.value)

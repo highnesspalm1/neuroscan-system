@@ -34,9 +34,15 @@ export const useCustomerStore = defineStore('customer', () => {
       // Set default authorization header
       customerApi.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
       
-      return response
-    } catch (err) {
-      error.value = err.response?.data?.detail || 'Login failed'
+      return response    } catch (err) {
+      // Better error handling for common issues
+      if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+        error.value = 'Connection timeout - the service might be starting up. Please try again in a moment.'
+      } else if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
+        error.value = 'Network error - please check your connection and try again.'
+      } else {
+        error.value = err.response?.data?.detail || err.message || 'Login failed'
+      }
       throw err
     } finally {
       isLoading.value = false

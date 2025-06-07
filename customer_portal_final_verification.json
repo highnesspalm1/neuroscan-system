@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-06-07T22:46:10.154771",
+  "test_results": {
+    "frontend_accessible": true,
+    "authentication_working": false,
+    "api_endpoints_working": 0,
+    "navigation_integrated": false,
+    "overall_success": false
+  },
+  "success_percentage": 25.0,
+  "frontend_url": "https://neuroscan-system.vercel.app",
+  "api_url": "https://neuroscan-api.onrender.com",
+  "test_credentials": {
+    "username": "testcustomer",
+    "password": "password123"
+  }
+}
