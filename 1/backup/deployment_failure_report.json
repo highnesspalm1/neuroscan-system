@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-06-06T18:47:10.386823",
+  "status": "FAILED",
+  "backend": {
+    "status": 200,
+    "data": {
+      "status": "healthy",
+      "environment": "production",
+      "api_version": "1.0.0",
+      "database": "connected",
+      "timestamp": "2025-06-06T12:00:00Z"
+    },
+    "success": true
+  },
+  "frontend": {
+    "status": 404,
+    "success": false,
+    "content_length": 0
+  },
+  "cors": {
+    "status": 400,
+    "cors_header": "",
+    "success": false
+  },
+  "attempt": 10,
+  "failed_tests": [
+    "Frontend",
+    "CORS"
+  ]
+}

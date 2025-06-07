@@ -92,3 +92,21 @@ class APIKey(Base):
     
     # Relationships
     customer = relationship("Customer")
+
+
+class User(Base):
+    """User model for authentication"""
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=False, index=True)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default="user", index=True)  # admin, user, viewer
+    is_active = Column(Boolean, default=True, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_login = Column(DateTime(timezone=True))
+    
+    def __repr__(self):
+        return f"<User(username='{self.username}', role='{self.role}')>"

@@ -1,0 +1,41 @@
+# Render.com Blueprint für NeuroScan Backend
+services:
+  # Backend API Service
+  - type: web
+    name: neuroscan-api
+    env: python
+    buildCommand: |
+      cd BackendAPI
+      pip install -r requirements.txt
+    startCommand: |
+      cd BackendAPI
+      uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: neuroscan-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: neuroscan-redis
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true      - key: CORS_ORIGINS
+        value: https://neuroscan-system.vercel.app,https://verify.neuroscan.vercel.app,https://portal.neuroscan.vercel.app,http://localhost:3000,http://localhost:5173
+
+  # PostgreSQL Database
+  - type: postgres
+    name: neuroscan-db
+    databaseName: neuroscan_production
+    user: neuroscan_user
+
+  # Redis Cache
+  - type: redis
+    name: neuroscan-redis
+    maxmemoryPolicy: allkeys-lru

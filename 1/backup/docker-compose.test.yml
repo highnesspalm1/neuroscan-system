@@ -1,0 +1,81 @@
+# Docker Compose Test Environment
+# This file is used for running automated tests
+
+version: '3.8'
+
+services:
+  # Test Backend
+  backend-test:
+    build: 
+      context: ./BackendAPI
+      dockerfile: Dockerfile.dev
+    container_name: neuroscan-backend-test
+    environment:
+      - ENVIRONMENT=testing
+      - DEBUG=false
+      - DATABASE_URL=postgresql://neuroscan:test_password@postgres-test:5432/neuroscan_test_db
+      - REDIS_URL=redis://redis-test:6379/0
+      - JWT_SECRET_KEY=test-secret-key
+    depends_on:
+      - postgres-test
+      - redis-test
+    networks:
+      - neuroscan-test-network
+    command: ["pytest", "tests/", "-v", "--cov=app", "--cov-report=xml"]
+
+  # Test Database
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: neuroscan-postgres-test
+    environment:
+      - POSTGRES_DB=neuroscan_test_db
+      - POSTGRES_USER=neuroscan
+      - POSTGRES_PASSWORD=test_password
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - neuroscan-test-network
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  # Test Redis
+  redis-test:
+    image: redis:7-alpine
+    container_name: neuroscan-redis-test
+    networks:
+      - neuroscan-test-network
+    tmpfs:
+      - /data
+
+  # Frontend Test
+  frontend-test:
+    build:
+      context: ./WebFrontend
+      dockerfile: Dockerfile.dev
+    container_name: neuroscan-frontend-test
+    environment:
+      - VITE_API_URL=http://backend-test:8000
+      - VITE_ENVIRONMENT=testing
+    networks:
+      - neuroscan-test-network
+    command: ["npm", "run", "test:unit"]
+
+  # E2E Test
+  e2e-test:
+    build:
+      context: ./WebFrontend
+      dockerfile: Dockerfile.dev
+    container_name: neuroscan-e2e-test
+    environment:
+      - VITE_API_URL=http://backend-test:8000
+      - VITE_ENVIRONMENT=testing
+    depends_on:
+      - backend-test
+      - frontend-test
+    networks:
+      - neuroscan-test-network
+    command: ["npm", "run", "test:e2e"]
+
+networks:
+  neuroscan-test-network:
+    driver: bridge

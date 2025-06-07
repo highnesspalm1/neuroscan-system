@@ -3,8 +3,10 @@
 """
 NeuroScan Backend API
 FastAPI-based REST API for certificate verification and management
+Cloud-optimized for Render.com deployment
 """
 
+import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,6 +17,7 @@ from pathlib import Path
 from app.core.config import settings
 from app.core.database import engine, SessionLocal, Base
 from app.core.security import RateLimitMiddleware
+from app.core.database_init import init_database, check_database_health
 from sqlalchemy import text
 from app.routes import admin, verify, api_v1, pdf_labels, websockets, monitoring, documentation, webhooks_simple as webhooks, websocket, enhanced_api, monitoring_v2
 from app.routes.monitoring import track_request_metrics
@@ -24,10 +27,23 @@ from app.routes.webhooks_simple import webhook_manager
 from app.core.versioning import version_manager
 from app.core.alerting import alert_manager
 from app.core.observability import observability_dashboard
+from app.core.database_init import init_database, check_database_health
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Initialize database with proper error handling
+try:
+    logger.info("Initializing database...")
+    if init_database():
+        logger.info("Database initialized successfully")
+    else:
+        logger.error("Database initialization failed")
+except Exception as e:
+    logger.error(f"Critical database error: {e}")
+    # Continue startup - let the app handle database errors gracefully
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -59,9 +75,8 @@ app = FastAPI(
     license_info={
         "name": "Proprietary",
         "url": "https://neurocompany.com/license"
-    },
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    },    docs_url="/docs",
+    redoc_url="/redoc",
     openapi_tags=[        {"name": "verification", "description": "Product verification operations"},
         {"name": "admin", "description": "Administrative operations"},
         {"name": "api", "description": "Core API operations"},
@@ -155,38 +170,47 @@ async def shutdown_event():
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for Docker/Kubernetes"""
+    """Health check endpoint for cloud platforms (Render, Railway, etc.)"""
     try:
-        # Check database connection
+        # Test database connection
         db = SessionLocal()
-        db.execute(text("SELECT 1"))
-        db.close()
+        try:
+            db.execute(text("SELECT 1"))
+            db_status = "connected"
+            
+            # Check if we're using PostgreSQL
+            if "postgresql" in str(engine.url):
+                db_type = "PostgreSQL"
+            else:
+                db_type = "SQLite"
+                
+        except Exception as e:
+            db_status = f"error: {str(e)}"
+            db_type = "unknown"
+        finally:
+            db.close()
         
         return {
             "status": "healthy",
-            "service": "NeuroScan API",
-            "version": "1.0.0",
-            "database": "connected"
+            "environment": os.getenv("ENVIRONMENT", "development"),
+            "api_version": "1.0.0",
+            "database": db_status,
+            "database_type": db_type,
+            "timestamp": "2025-06-06T12:00:00Z"
         }
     except Exception as e:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "status": "unhealthy",
-                "service": "NeuroScan API",
-                "error": str(e)
-            }
-        )
+        raise HTTPException(status_code=503, detail=f"Service unhealthy: {str(e)}")
 
 # Root endpoint
 @app.get("/")
 async def root():
-    """Root endpoint with API information"""
+    """Root endpoint - API information"""
     return {
-        "service": "NeuroScan API",
+        "message": "NeuroScan Authentication API",
         "version": "1.0.0",
-        "company": "NeuroCompany",
-        "docs": "/docs" if settings.DEBUG else "Contact support for API documentation"
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "docs": "/docs",
+        "health": "/health"
     }
 
 # Global exception handler
@@ -205,9 +229,11 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 if __name__ == "__main__":
+    # Get port from environment variable (Render sets PORT)
+    port = int(os.getenv("PORT", 8000))
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=settings.DEBUG
     )

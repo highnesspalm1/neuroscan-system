@@ -1,0 +1,53 @@
+# Development dependencies for NeuroScan Backend API
+# These are additional packages needed for development and testing
+
+# Testing frameworks
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.3.1
+pytest-html==4.1.1
+
+# Code quality tools
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+bandit==1.7.5
+
+# Development tools
+ipython==8.17.2
+jupyter==1.0.0
+notebook==7.0.6
+
+# Database tools
+alembic==1.12.1
+sqlalchemy-utils==0.41.1
+
+# API documentation tools
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+# Debugging tools
+debugpy==1.8.0
+pdb++==0.10.3
+
+# Performance monitoring
+memory-profiler==0.61.0
+py-spy==0.3.14
+
+# Development server tools
+watchdog==3.0.0
+python-dotenv==1.0.0
+
+# HTTP client for testing
+httpx==0.25.2
+requests==2.31.0
+
+# Mock data generation
+faker==20.1.0
+factory-boy==3.3.0
+
+# Load testing
+locust==2.17.0

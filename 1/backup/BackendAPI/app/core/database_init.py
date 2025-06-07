@@ -8,7 +8,7 @@ import logging
 from sqlalchemy import text, inspect
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.database import engine, Base
-from app.models import Customer, Product, Certificate, ScanLog, APIKey, User
+from app.models import Customer, Product, Certificate, ScanLog, APIKey
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +42,6 @@ def init_database():
             tables = inspector.get_table_names()
             logger.info(f"Created tables: {tables}")
             
-            # Create default admin user if it doesn't exist
-            create_default_admin_user()
-            
             return True
             
     except SQLAlchemyError as e:
@@ -53,43 +50,6 @@ def init_database():
     except Exception as e:
         logger.error(f"Unexpected error during database initialization: {e}")
         return False
-
-
-def create_default_admin_user():
-    """Create default admin user if none exists"""
-    try:
-        from sqlalchemy.orm import sessionmaker
-        from app.core.security import get_password_hash
-        
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        
-        # Check if admin user already exists
-        admin_exists = session.query(User).filter(User.role == "admin").first()
-        
-        if not admin_exists:
-            logger.info("Creating default admin user...")
-            
-            # Create default admin
-            hashed_password = get_password_hash("admin123")
-            admin_user = User(
-                username="admin",
-                email="admin@neuroscan.com",
-                hashed_password=hashed_password,
-                role="admin",
-                is_active=True
-            )
-            
-            session.add(admin_user)
-            session.commit()
-            logger.info("Default admin user created successfully (username: admin, password: admin123)")
-        else:
-            logger.info("Admin user already exists")
-            
-        session.close()
-        
-    except Exception as e:
-        logger.error(f"Failed to create default admin user: {e}")
 
 
 def reset_database():

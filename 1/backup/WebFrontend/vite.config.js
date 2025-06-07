@@ -9,39 +9,47 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  // Development server configuration
   server: {
     port: 3000,
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
       },
       '/verify': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
       },
       '/admin': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
       }
     }
   },
+  // Production build configuration for Vercel
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    chunkSizeWarningLimit: 1600,
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
+    target: 'es2015',
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['vue', 'vue-router', 'pinia'],
-          ui: ['@headlessui/vue', '@heroicons/vue'],
-          charts: ['chart.js', 'vue-chartjs']
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'ui-vendor': ['@headlessui/vue', '@heroicons/vue']
         }
       }
     }
-  }
+  },
+  // Environment variables
+  define: {
+    __VUE_OPTIONS_API__: true,
+    __VUE_PROD_DEVTOOLS__: false
+  },
 })

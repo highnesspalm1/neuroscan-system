@@ -1,0 +1,98 @@
+#!/bin/bash
+# Git Setup Script für NeuroScan Cloud Deployment
+
+echo "🚀 Setting up Git for NeuroScan Cloud Deployment..."
+
+# Git initialisieren
+git init
+
+# Git Konfiguration
+git config user.name "NeuroCompany"
+git config user.email "highnesspalm@gmail.com"
+
+# .gitignore erstellen
+cat > .gitignore << 'EOF'
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Docker
+.dockerignore
+
+# Render
+.render/
+
+# Vercel
+.vercel
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+EOF
+
+# Alle Dateien hinzufügen
+git add .
+
+# Ersten Commit erstellen
+git commit -m "Initial NeuroScan cloud deployment setup
+
+- Added Backend API (FastAPI + PostgreSQL)
+- Added Web Frontend (Vue.js + Vite)
+- Added Desktop App (PySide6)
+- Added Render.com configuration (render.yaml)
+- Added Vercel.com configuration (vercel.json)
+- Added cloud deployment documentation
+- Ready for production deployment"
+
+echo "✅ Git repository successfully initialized!"
+echo ""
+echo "Next steps:"
+echo "1. Create GitHub repository: https://github.com/new"
+echo "2. Add remote: git remote add origin https://github.com/YOUR_USERNAME/neuroscan-system.git"
+echo "3. Push to GitHub: git push -u origin main"
+echo "4. Deploy to Render.com and Vercel.com"

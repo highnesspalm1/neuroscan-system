@@ -19,7 +19,7 @@ from app.core.database import engine, SessionLocal, Base
 from app.core.security import RateLimitMiddleware
 from app.core.database_init import init_database, check_database_health
 from sqlalchemy import text
-from app.routes import admin, verify, api_v1, pdf_labels, websockets, monitoring, documentation, webhooks_simple as webhooks, websocket, enhanced_api, monitoring_v2
+from app.routes import admin, verify, api_v1, pdf_labels, websockets, monitoring, documentation, webhooks_simple as webhooks, websocket, enhanced_api, monitoring_v2, auth
 from app.routes.monitoring import track_request_metrics
 from app.core.caching import cache_manager
 from app.core.analytics import analytics_engine
@@ -110,6 +110,7 @@ async def track_requests(request: Request, call_next):
     return await track_request_metrics(request, call_next)
 
 # Include routers
+app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(verify.router, prefix="/verify", tags=["verification"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 app.include_router(api_v1.router, prefix="/api/v1", tags=["api"])
