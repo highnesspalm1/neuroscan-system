@@ -12,9 +12,7 @@
               </div>
               <span class="text-xl font-bold text-gradient">NeuroScan</span>
             </router-link>
-          </div>
-
-          <!-- Navigation Links -->
+          </div>          <!-- Navigation Links -->
           <div class="hidden md:flex items-center space-x-8">
             <router-link to="/" class="text-gray-300 hover:text-primary-400 transition-colors duration-200">
               Home
@@ -27,6 +25,11 @@
             </router-link>
             <router-link to="/contact" class="text-gray-300 hover:text-primary-400 transition-colors duration-200">
               Contact
+            </router-link>            <router-link 
+              to="/customer/login" 
+              class="glass-button bg-gradient-accent hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium"
+            >
+              Customer Portal
             </router-link>
             <router-link 
               to="/admin/login" 
@@ -45,15 +48,14 @@
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Mobile menu -->
+      </div>      <!-- Mobile menu -->
       <div v-if="mobileMenuOpen" class="md:hidden glass-effect border-t border-white/10">
         <div class="px-2 pt-2 pb-3 space-y-1">
           <router-link to="/" class="block px-3 py-2 text-gray-300 hover:text-primary-400">Home</router-link>
           <router-link to="/verify" class="block px-3 py-2 text-gray-300 hover:text-primary-400">Verify Product</router-link>
           <router-link to="/about" class="block px-3 py-2 text-gray-300 hover:text-primary-400">About</router-link>
           <router-link to="/contact" class="block px-3 py-2 text-gray-300 hover:text-primary-400">Contact</router-link>
+          <router-link to="/customer/login" class="block px-3 py-2 text-emerald-400 font-medium">Customer Portal</router-link>
           <router-link to="/admin/login" class="block px-3 py-2 text-primary-400 font-medium">Admin Login</router-link>
         </div>
       </div>
@@ -222,13 +224,17 @@
         </h2>
         <p class="text-xl text-gray-300 mb-8">
           Start verifying your products today with our powerful authentication system.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        </p>        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <router-link 
             to="/verify" 
             class="glass-button bg-gradient-primary hover:scale-105 transform transition-all duration-300 neon-glow px-8 py-4 text-lg font-semibold"
           >
             Verify a Product
+          </router-link>          <router-link 
+            to="/customer/login" 
+            class="glass-button bg-gradient-accent hover:scale-105 transform transition-all duration-300 neon-glow px-8 py-4 text-lg font-semibold"
+          >
+            Customer Portal
           </router-link>
           <router-link 
             to="/admin/login" 

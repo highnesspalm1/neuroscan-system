@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-06-07T22:13:54.874922",
+  "success_rate": 87.5,
+  "status": "\u2705 ACCESSIBLE",
+  "api_results": {
+    "/health": {
+      "status_code": 200,
+      "success": true
+    },
+    "/docs": {
+      "status_code": 200,
+      "success": true
+    },
+    "/customer/login": {
+      "status_code": 500,
+      "success": false
+    },
+    "/customer/create": {
+      "status_code": 404,
+      "success": true
+    }
+  },
+  "frontend_results": {
+    "/": true,
+    "/customer/login": true,
+    "/customer/dashboard": true,
+    "/admin/login": true
+  },
+  "urls": {
+    "frontend": "https://neuroscan-system.vercel.app",
+    "customer_portal": "https://neuroscan-system.vercel.app/customer/login",
+    "api": "https://neuroscan-api.onrender.com",
+    "docs": "https://neuroscan-api.onrender.com/docs"
+  }
+}
