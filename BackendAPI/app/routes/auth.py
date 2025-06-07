@@ -79,17 +79,10 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
         data={"sub": user.username, "role": user.role},
         expires_delta=access_token_expires
     )
-    
-    return {
+      return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "role": user.role,
-            "is_active": user.is_active
-        }
+        "user": user
     }
 
 
