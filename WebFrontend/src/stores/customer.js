@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import customerApi from '@/api/customer'
+import api from '@/api/index'
 
 export const useCustomerStore = defineStore('customer', () => {
   // State
@@ -24,17 +25,14 @@ export const useCustomerStore = defineStore('customer', () => {
       error.value = null
       
       const response = await customerApi.login(credentials)
-      
-      token.value = response.access_token
+        token.value = response.access_token
       customer.value = response.customer
       
       // Store token in localStorage
       localStorage.setItem('customer_token', response.access_token)
       
-      // Set default authorization header
-      customerApi.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
-      
-      return response    } catch (err) {
+      return response
+    } catch (err) {
       // Better error handling for common issues
       if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
         error.value = 'Connection timeout - the service might be starting up. Please try again in a moment.'
@@ -43,8 +41,7 @@ export const useCustomerStore = defineStore('customer', () => {
       } else {
         error.value = err.response?.data?.detail || err.message || 'Login failed'
       }
-      throw err
-    } finally {
+      throw err    } finally {
       isLoading.value = false
     }
   }
@@ -58,7 +55,6 @@ export const useCustomerStore = defineStore('customer', () => {
     scanLogs.value = []
     
     localStorage.removeItem('customer_token')
-    delete customerApi.defaults.headers.common['Authorization']
   }
 
   const fetchMe = async () => {
@@ -145,13 +141,9 @@ export const useCustomerStore = defineStore('customer', () => {
     } finally {
       isLoading.value = false
     }
-  }
-
-  // Initialize store if token exists
+  }  // Initialize store if token exists
   const initializeAuth = async () => {
     if (token.value) {
-      // Set authorization header
-      customerApi.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
       try {
         await fetchMe()
       } catch (err) {

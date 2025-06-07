@@ -20,9 +20,18 @@ console.log('- Environment VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_UR
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore()
+    
+    // Check for admin token first
     if (authStore.token) {
       config.headers.Authorization = `Bearer ${authStore.token}`
+    } else {
+      // Check for customer token if no admin token
+      const customerToken = localStorage.getItem('customer_token')
+      if (customerToken) {
+        config.headers.Authorization = `Bearer ${customerToken}`
+      }
     }
+    
     return config
   },
   (error) => {
