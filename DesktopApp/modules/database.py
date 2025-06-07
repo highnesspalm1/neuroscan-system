@@ -36,18 +36,42 @@ class DatabaseManager:
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
-            
-            # Products table
+              # Products table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     customer_id INTEGER NOT NULL,
                     name TEXT NOT NULL,
+                    sku TEXT,
                     description TEXT,
+                    category TEXT,
+                    price REAL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (customer_id) REFERENCES customers (id)
                 )
             """)
+            
+            # Add missing columns to existing products table if they don't exist
+            try:
+                cursor.execute("ALTER TABLE products ADD COLUMN sku TEXT")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            try:
+                cursor.execute("ALTER TABLE products ADD COLUMN category TEXT")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            try:
+                cursor.execute("ALTER TABLE products ADD COLUMN price REAL")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            try:
+                cursor.execute("ALTER TABLE products ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
             
             # Certificates table
             cursor.execute("""
@@ -129,16 +153,15 @@ class DatabaseManager:
                     WHERE id = ?
                 """, params)
                 conn.commit()
-    
-    # Product management
-    def add_product(self, customer_id: int, name: str, description: str = None) -> int:
+      # Product management
+    def add_product(self, customer_id: int, name: str, sku: str = None, description: str = None, category: str = None, price: float = None) -> int:
         """Add a new product"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO products (customer_id, name, description)
-                VALUES (?, ?, ?)
-            """, (customer_id, name, description))
+                INSERT INTO products (customer_id, name, sku, description, category, price)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (customer_id, name, sku, description, category, price))
             conn.commit()
             return cursor.lastrowid
     
@@ -166,6 +189,40 @@ class DatabaseManager:
             
             return [dict(row) for row in cursor.fetchall()]
     
+    def update_product(self, product_id: int, name: str = None, sku: str = None, description: str = None, category: str = None, price: float = None):
+        """Update product information"""
+        updates = []
+        params = []
+        
+        if name is not None:
+            updates.append("name = ?")
+            params.append(name)
+        if sku is not None:
+            updates.append("sku = ?")
+            params.append(sku)
+        if description is not None:
+            updates.append("description = ?")
+            params.append(description)
+        if category is not None:
+            updates.append("category = ?")
+            params.append(category)
+        if price is not None:
+            updates.append("price = ?")
+            params.append(price)
+        
+        if updates:
+            updates.append("updated_at = CURRENT_TIMESTAMP")
+            params.append(product_id)
+            
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(f"""
+                    UPDATE products 
+                    SET {', '.join(updates)}
+                    WHERE id = ?
+                """, params)
+                conn.commit()
+
     # Certificate management
     def generate_serial_number(self, product_id: int, customer_id: int) -> str:
         """Generate a unique serial number"""

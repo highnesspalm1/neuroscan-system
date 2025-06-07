@@ -69,27 +69,55 @@ QPushButton:disabled {{
 }}
 
 /* Primary Button (Accent) */
-QPushButton.primary {{
-    background-color: {self.colors['accent']};
-    border-color: {self.colors['accent']};
+QPushButton[class="primary"] {{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #00E5FF, stop:1 #0099CC);
+    border: none;
+    border-radius: 8px;
+    color: white;
     font-weight: 700;
+    padding: 12px 24px;
 }}
 
-QPushButton.primary:hover {{
-    background-color: #00D4E6;
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
+QPushButton[class="primary"]:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #33EAFF, stop:1 #00B8E6);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+    transform: translateY(-1px);
 }}
 
 /* Secondary Button */
-QPushButton.secondary {{
-    background-color: {self.colors.get('secondary', '#39FF14')};
-    border-color: {self.colors.get('secondary', '#39FF14')};
-    color: #000000;
+QPushButton[class="secondary"] {{
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 12px 24px;
 }}
 
-QPushButton.secondary:hover {{
-    background-color: #32E612;
-    box-shadow: 0 0 25px rgba(57, 255, 20, 0.5);
+QPushButton[class="secondary"]:hover {{
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}}
+
+/* Accent Button */
+QPushButton[class="accent"] {{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #39FF14, stop:1 #2ECC11);
+    border: none;
+    border-radius: 8px;
+    color: #000000;
+    font-weight: 700;
+    padding: 12px 24px;
+}}
+
+QPushButton[class="accent"]:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #4AFF25, stop:1 #39DD15);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+    transform: translateY(-1px);
 }}
 
 /* Input Fields */

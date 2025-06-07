@@ -7,11 +7,12 @@ Admin routes for internal management (Desktop App)
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List, Optional
 import io
 from datetime import datetime
 
-from ..core.database import get_db
+from ..core.database import get_db, engine
 from ..core.security import verify_token
 from ..models import Customer, Product, Certificate, ScanLog
 from ..schemas import (
@@ -73,7 +74,28 @@ async def create_customer(
     current_user: dict = Depends(verify_token)
 ):
     """Create a new customer"""
-    db_customer = Customer(**customer.dict())
+    from ..core.security import get_password_hash
+    
+    # Check if username is unique (if provided)
+    if customer.username:
+        existing_customer = db.query(Customer).filter(
+            Customer.username == customer.username
+        ).first()
+        if existing_customer:
+            raise HTTPException(
+                status_code=400, 
+                detail="Username already exists"
+            )
+    
+    # Prepare customer data
+    customer_data = customer.dict()
+    
+    # Hash password if provided
+    if customer.password:
+        customer_data["hashed_password"] = get_password_hash(customer.password)
+        del customer_data["password"]  # Remove plain password
+    
+    db_customer = Customer(**customer_data)
     db.add(db_customer)
     db.commit()
     db.refresh(db_customer)
@@ -101,11 +123,30 @@ async def update_customer(
     current_user: dict = Depends(verify_token)
 ):
     """Update customer"""
+    from ..core.security import get_password_hash
+    
     customer = db.query(Customer).filter(Customer.id == customer_id).first()
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
+    # Check if username is unique (if being updated)
+    if customer_update.username and customer_update.username != customer.username:
+        existing_customer = db.query(Customer).filter(
+            Customer.username == customer_update.username
+        ).first()
+        if existing_customer:
+            raise HTTPException(
+                status_code=400, 
+                detail="Username already exists"
+            )
+    
     update_data = customer_update.dict(exclude_unset=True)
+    
+    # Hash password if provided
+    if "password" in update_data and update_data["password"]:
+        update_data["hashed_password"] = get_password_hash(update_data["password"])
+        del update_data["password"]  # Remove plain password
+    
     for field, value in update_data.items():
         setattr(customer, field, value)
     
@@ -164,6 +205,43 @@ async def create_product(
     db.commit()
     db.refresh(db_product)
     return db_product
+
+
+@router.put("/products/{product_id}", response_model=ProductSchema)
+async def update_product(
+    product_id: int,
+    product_update: ProductUpdate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(verify_token)
+):
+    """Update product"""
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    update_data = product_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(product, field, value)
+    
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+@router.delete("/products/{product_id}")
+async def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(verify_token)
+):
+    """Delete product"""
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    db.delete(product)
+    db.commit()
+    return {"message": "Product deleted successfully"}
 
 
 # Certificate Management
@@ -463,3 +541,112 @@ async def generate_all_products_labels(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=all_products_labels_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"}
     )
+
+
+# Database Migration Endpoints
+@router.post("/migrate")
+async def run_database_migration(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(verify_token)
+):
+    """Run database migration to add new product fields"""
+    try:
+        # SQL commands to add new columns
+        migration_sql = [
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS sku VARCHAR(255)",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(255)", 
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS price VARCHAR(50)",
+            "ALTER TABLE products ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE",
+            "CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)",
+            "CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)",
+            "UPDATE products SET updated_at = created_at WHERE updated_at IS NULL"
+        ]
+        
+        # Execute migration commands
+        for sql in migration_sql:
+            db.execute(text(sql))
+        
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": "Database migration completed successfully",
+            "fields_added": ["sku", "category", "price", "updated_at"],
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
+
+
+@router.post("/init-db")
+async def initialize_database(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(verify_token)
+):
+    """Initialize/recreate database schema with all fields"""
+    try:
+        # Import Base and create all tables with updated schema
+        from ..models import Base
+        Base.metadata.create_all(bind=engine)
+        
+        return {
+            "status": "success", 
+            "message": "Database schema initialized successfully",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database initialization failed: {str(e)}")
+
+
+@router.get("/db-schema")
+async def get_database_schema(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(verify_token)
+):
+    """Get current database schema information"""
+    try:
+        # Query to get column information for products table
+        schema_query = """
+        SELECT 
+            column_name, 
+            data_type, 
+            is_nullable,
+            column_default
+        FROM information_schema.columns 
+        WHERE table_name = 'products' 
+        ORDER BY ordinal_position
+        """
+        
+        result = db.execute(text(schema_query))
+        columns = [dict(row) for row in result]
+        
+        return {
+            "status": "success",
+            "table": "products",
+            "columns": columns,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        # Fallback for SQLite or other databases
+        try:
+            # Get a sample product to see available fields
+            sample_product = db.query(Product).first()
+            if sample_product:
+                available_fields = list(sample_product.__dict__.keys())
+                available_fields = [f for f in available_fields if not f.startswith('_')]
+            else:
+                available_fields = ["No products found"]
+                
+            return {
+                "status": "success",
+                "table": "products", 
+                "available_fields": available_fields,
+                "note": "Schema info from sample record (SQLite)",
+                "timestamp": datetime.now().isoformat()
+            }
+        except Exception as e2:
+            raise HTTPException(status_code=500, detail=f"Schema query failed: {str(e2)}")

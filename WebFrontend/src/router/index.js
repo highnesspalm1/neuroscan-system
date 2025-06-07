@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useCustomerStore } from '@/stores/customer'
 
 // Public pages
 import Home from '@/views/Home.vue'
@@ -13,6 +14,13 @@ import AdminDashboard from '@/views/admin/Dashboard.vue'
 import AdminProducts from '@/views/admin/Products.vue'
 import AdminCertificates from '@/views/admin/Certificates.vue'
 import AdminAnalytics from '@/views/admin/Analytics.vue'
+
+// Customer pages
+import CustomerLogin from '@/views/customer/Login.vue'
+import CustomerDashboard from '@/views/customer/Dashboard.vue'
+import CustomerProducts from '@/views/customer/Products.vue'
+import CustomerCertificates from '@/views/customer/Certificates.vue'
+import CustomerScanLogs from '@/views/customer/ScanLogs.vue'
 
 // Error pages
 import NotFound from '@/views/errors/NotFound.vue'
@@ -109,8 +117,7 @@ const routes = [
       description: 'Manage product certificates and authentications',
       requiresAuth: true
     }
-  },
-  {
+  },  {
     path: '/admin/analytics',
     name: 'AdminAnalytics',
     component: AdminAnalytics,
@@ -118,6 +125,62 @@ const routes = [
       title: 'Analytics & Reports - NeuroScan',
       description: 'View verification analytics and generate reports',
       requiresAuth: true
+    }
+  },
+
+  // Customer Routes
+  {
+    path: '/customer/login',
+    name: 'CustomerLogin',
+    component: CustomerLogin,
+    meta: { 
+      title: 'Customer Login - NeuroScan',
+      description: 'Customer access to NeuroScan portal',
+      customerGuest: true
+    }
+  },
+  {
+    path: '/customer',
+    redirect: '/customer/dashboard'
+  },
+  {
+    path: '/customer/dashboard',
+    name: 'CustomerDashboard',
+    component: CustomerDashboard,
+    meta: { 
+      title: 'Customer Dashboard - NeuroScan',
+      description: 'Customer portal dashboard and analytics',
+      requiresCustomerAuth: true
+    }
+  },
+  {
+    path: '/customer/products',
+    name: 'CustomerProducts',
+    component: CustomerProducts,
+    meta: { 
+      title: 'My Products - NeuroScan',
+      description: 'View and manage your products',
+      requiresCustomerAuth: true
+    }
+  },
+  {
+    path: '/customer/certificates',
+    name: 'CustomerCertificates',
+    component: CustomerCertificates,
+    meta: { 
+      title: 'My Certificates - NeuroScan',
+      description: 'View and manage your certificates',
+      requiresCustomerAuth: true
+    }
+  },
+  {
+    path: '/customer/scan-logs',
+    name: 'CustomerScanLogs',
+    component: CustomerScanLogs,
+    meta: { 
+      title: 'Scan History - NeuroScan',
+      description: 'View your product scan history and analytics',
+      requiresCustomerAuth: true
     }
   },
 
@@ -148,6 +211,7 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  const customerStore = useCustomerStore()
   
   // Set page title and meta
   if (to.meta.title) {
@@ -161,7 +225,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Check authentication requirements
+  // Check admin authentication requirements
   if (to.meta.requiresAuth) {
     if (!authStore.isAuthenticated) {
       next({ name: 'AdminLogin', query: { redirect: to.fullPath } })
@@ -169,9 +233,23 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Redirect authenticated users away from login
+  // Check customer authentication requirements
+  if (to.meta.requiresCustomerAuth) {
+    if (!customerStore.isAuthenticated) {
+      next({ name: 'CustomerLogin', query: { redirect: to.fullPath } })
+      return
+    }
+  }
+
+  // Redirect authenticated admin users away from admin login
   if (to.meta.guest && authStore.isAuthenticated) {
     next({ name: 'AdminDashboard' })
+    return
+  }
+
+  // Redirect authenticated customers away from customer login
+  if (to.meta.customerGuest && customerStore.isAuthenticated) {
+    next({ name: 'CustomerDashboard' })
     return
   }
 

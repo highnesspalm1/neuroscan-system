@@ -18,6 +18,11 @@ class Customer(Base):
     name = Column(String, nullable=False, index=True)
     email = Column(String, unique=True, index=True)
     logo_path = Column(String)
+    # Authentication fields for customer login
+    username = Column(String, unique=True, index=True)  # Customer login username
+    hashed_password = Column(String)  # Hashed password for customer login
+    is_active = Column(Boolean, default=True, index=True)  # Customer account status
+    last_login = Column(DateTime(timezone=True))  # Last login timestamp
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -33,8 +38,12 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
     name = Column(String, nullable=False, index=True)
+    sku = Column(String, index=True)
     description = Column(Text)
+    category = Column(String, index=True)
+    price = Column(String)  # Using String to handle currency formatting
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     customer = relationship("Customer", back_populates="products")

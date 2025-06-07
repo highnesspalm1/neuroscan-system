@@ -5,10 +5,11 @@
     "database": {
         "type": "sqlite",
         "path": "neuroscan.db"
-    },
-    "api": {
-        "base_url": "http://localhost:8000",
-        "timeout": 30
+    },    "api": {
+        "base_url": "https://neuroscan-api.onrender.com",
+        "timeout": 120,
+        "frontend_url": "https://neuroscan-system.vercel.app",
+        "docs_url": "https://neuroscan-api.onrender.com/docs"
     },
     "ui": {
         "theme": "glassmorphism_dark",

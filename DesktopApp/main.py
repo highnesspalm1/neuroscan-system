@@ -20,6 +20,9 @@ from modules.database import DatabaseManager
 from modules.main_window import MainWindow
 from modules.styles import GlassmorphismStyle
 
+# Import force style fix
+from force_style_fix import apply_forced_styles_after_show
+
 
 class NeuroScanApp(QApplication):
     """Main Application Class with Glassmorphism Styling"""
@@ -40,9 +43,11 @@ class NeuroScanApp(QApplication):
         
         # Initialize database
         self.db_manager = DatabaseManager(self.config["database"]["path"])
-        
-        # Create main window
+          # Create main window
         self.main_window = MainWindow(self.config, self.db_manager)
+        
+        # Apply force styles after window creation
+        self.setup_force_styles()
         
     def load_config(self):
         """Load configuration from config.json"""
@@ -90,6 +95,15 @@ class NeuroScanApp(QApplication):
         palette.setColor(QPalette.HighlightedText, QColor("#000000"))
         
         self.setPalette(palette)
+        
+    def setup_force_styles(self):
+        """Setup force style application for enhanced visual improvements"""
+        # Apply forced styles after the main window is shown
+        def apply_on_show():
+            apply_forced_styles_after_show(self.main_window)
+            
+        # Connect to main window show event
+        QTimer.singleShot(200, apply_on_show)
 
 
 def main():

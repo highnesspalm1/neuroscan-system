@@ -90,10 +90,11 @@
                     :checked="selectedProducts.length === filteredProducts.length && filteredProducts.length > 0"
                     class="rounded bg-white/10 border-white/20 text-cyan-400 focus:ring-cyan-400 focus:ring-offset-0"
                   >
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Product</th>
+                </th>                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Product</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Serial Number</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">SKU</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Price</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
@@ -124,14 +125,19 @@
                       <p class="text-sm text-gray-400">{{ product.brand }}</p>
                     </div>
                   </div>
+                </td>                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm font-mono text-gray-300">{{ product.serial_number }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm font-mono text-gray-300">{{ product.serial_number }}</span>
+                  <span class="text-sm text-gray-300">{{ product.sku || '-' }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-400 rounded-full">
                     {{ product.category }}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-green-400 font-medium">{{ product.price || '-' }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
@@ -246,13 +252,29 @@
                 required
                 class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
               >
-            </div>
-            <div>
+            </div>            <div>
               <label class="block text-sm font-medium text-gray-300 mb-2">Serial Number</label>
               <input
                 v-model="productForm.serial_number"
                 type="text"
                 required
+                class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">SKU</label>
+              <input
+                v-model="productForm.sku"
+                type="text"
+                class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Price</label>
+              <input
+                v-model="productForm.price"
+                type="text"
+                placeholder="e.g., $99.99"
                 class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
               >
             </div>
@@ -355,7 +377,9 @@ const productForm = ref({
   name: '',
   brand: '',
   serial_number: '',
+  sku: '',
   category: '',
+  price: '',
   description: ''
 })
 
@@ -551,7 +575,9 @@ const resetForm = () => {
     name: '',
     brand: '',
     serial_number: '',
+    sku: '',
     category: '',
+    price: '',
     description: ''
   }
 }

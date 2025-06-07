@@ -22,6 +22,8 @@ from .dashboard_widgets import DashboardCard, StatisticsCard, RecentActivityWidg
 from .customer_manager import CustomerManagerWidget
 from .certificate_manager import CertificateManagerWidget
 from .pdf_generator import PDFGenerator
+from .cloud_status import CloudStatusWidget
+from force_style_fix import force_auth_dialog_styles, apply_forced_styles_after_show, force_cloud_status_styles
 
 
 class MainWindow(QMainWindow):
@@ -50,6 +52,9 @@ class MainWindow(QMainWindow):
         self.refresh_timer = QTimer()
         self.refresh_timer.timeout.connect(self.refresh_dashboard)
         self.refresh_timer.start(30000)  # Refresh every 30 seconds
+        
+        # Apply force styles after initialization
+        self.setup_force_styles()
     
     def init_ui(self):
         """Initialize the user interface"""
@@ -143,6 +148,13 @@ class MainWindow(QMainWindow):
         gen_pdf_btn.clicked.connect(self.batch_generate_pdfs)
         actions_layout.addWidget(gen_pdf_btn)
         
+        # Authentication test button
+        auth_test_btn = QPushButton("🔐 API Login")
+        auth_test_btn.setProperty("class", "accent")
+        auth_test_btn.clicked.connect(self.test_api_connection)
+        auth_test_btn.setToolTip("Test API connection and authentication")
+        actions_layout.addWidget(auth_test_btn)
+        
         header_layout.addWidget(actions_frame)
         
         return header_layout
@@ -181,6 +193,9 @@ class MainWindow(QMainWindow):
         self.recent_activity = RecentActivityWidget(self.db_manager)
         content_layout.addWidget(self.recent_activity, 2)
         
+        # Right side layout for quick stats and cloud status
+        right_side_layout = QVBoxLayout()
+        
         # Quick stats
         quick_stats_frame = QFrame()
         quick_stats_frame.setProperty("class", "panel")
@@ -197,7 +212,16 @@ class MainWindow(QMainWindow):
         quick_stats_layout.addWidget(self.active_certs_label)
         quick_stats_layout.addStretch()
         
-        content_layout.addWidget(quick_stats_frame, 1)
+        right_side_layout.addWidget(quick_stats_frame)
+          # Cloud status widget
+        self.cloud_status_widget = CloudStatusWidget(self.config)
+        self.cloud_status_widget.setObjectName("CloudStatusWidget")  # For force styling
+        right_side_layout.addWidget(self.cloud_status_widget)
+        
+        # Container for right side
+        right_side_container = QWidget()
+        right_side_container.setLayout(right_side_layout)
+        content_layout.addWidget(right_side_container, 1)
         
         layout.addLayout(content_layout)
         
@@ -334,13 +358,38 @@ class MainWindow(QMainWindow):
                 shutil.copy2(self.db_manager.db_path, backup_path)
                 QMessageBox.information(self, "Backup", "Backup erfolgreich erstellt!")
                 
-        except Exception as e:
-            QMessageBox.critical(self, "Fehler", f"Backup-Erstellung fehlgeschlagen: {e}")
+        except Exception as e:            QMessageBox.critical(self, "Fehler", f"Backup-Erstellung fehlgeschlagen: {e}")
     
     def test_api_connection(self):
         """Test API connection"""
-        # Placeholder for API testing
-        QMessageBox.information(self, "API-Test", "API-Verbindungstest wird implementiert...")
+        try:
+            from .auth_dialog import AuthDialog
+            from .api_manager import APIManager
+            
+            # Create API manager
+            api_manager = APIManager(self.config.get("api", {}))
+            
+            # Show authentication dialog
+            auth_dialog = AuthDialog(api_manager, self)
+            
+            # Apply force styles after a brief delay to ensure widget is fully created
+            QTimer.singleShot(50, lambda: force_auth_dialog_styles(auth_dialog))
+            
+            # Show dialog
+            result = auth_dialog.exec()
+            
+            if result == QDialog.Accepted:
+                QMessageBox.information(self, "API-Test", 
+                                      "✅ Authentifizierung erfolgreich!\nAPI-Verbindung ist aktiv.")
+                self.statusBar().showMessage("API-Verbindung erfolgreich getestet", 3000)
+            else:
+                QMessageBox.information(self, "API-Test", 
+                                      "ℹ️ Authentifizierung abgebrochen oder fehlgeschlagen.")
+                
+        except Exception as e:
+            QMessageBox.critical(self, "API-Test Fehler", 
+                               f"❌ Fehler beim Testen der API-Verbindung:\n{str(e)}")
+            print(f"API connection test error: {e}")  # For debugging
     
     def show_settings(self):
         """Show settings dialog"""
@@ -365,6 +414,19 @@ class MainWindow(QMainWindow):
         
         dialog = BackupDialog(self.db_manager, self)
         dialog.exec()
+    
+    def setup_force_styles(self):
+        """Setup force styles for main window widgets"""
+        try:
+            # Apply forced styles to the main window after a delay to ensure all widgets are created
+            QTimer.singleShot(200, lambda: apply_forced_styles_after_show(self))
+            
+            # Apply styles to cloud status widget if it exists
+            if hasattr(self, 'cloud_status_widget'):
+                QTimer.singleShot(300, lambda: force_cloud_status_styles(self.cloud_status_widget))
+                
+        except Exception as e:
+            print(f"Error applying force styles: {e}")
     
     def closeEvent(self, event):
         """Handle window close event"""

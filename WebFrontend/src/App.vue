@@ -24,17 +24,24 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCustomerStore } from '@/stores/customer'
 import AppNavbar from '@/components/AppNavbar.vue'
 import AppFooter from '@/components/AppFooter.vue'
 
 const isLoading = ref(false)
 const authStore = useAuthStore()
+const customerStore = useCustomerStore()
 
 onMounted(async () => {
   // Initialize app
   try {
     isLoading.value = true
-    await authStore.initializeAuth()
+    
+    // Initialize both admin and customer authentication
+    await Promise.all([
+      authStore.initializeAuth(),
+      customerStore.initializeAuth()
+    ])
   } catch (error) {
     console.error('App initialization error:', error)
   } finally {

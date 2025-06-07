@@ -47,8 +47,7 @@
           >
             Contact
           </router-link>
-          
-          <!-- Admin Link -->
+            <!-- Admin Link -->
           <router-link
             v-if="!authStore.isAuthenticated"
             to="/admin/login"
@@ -62,6 +61,22 @@
             class="px-4 py-2 glass-button border-cyan-500/30 hover:border-cyan-400/50 text-cyan-400 transition-colors"
           >
             Dashboard
+          </router-link>
+          
+          <!-- Customer Link -->
+          <router-link
+            v-if="!customerStore.isAuthenticated"
+            to="/customer/login"
+            class="px-4 py-2 glass-button border-emerald-500/30 hover:border-emerald-400/50 text-emerald-400 transition-colors"
+          >
+            Customer Portal
+          </router-link>
+          <router-link
+            v-else
+            to="/customer/dashboard"
+            class="px-4 py-2 glass-button border-emerald-500/30 hover:border-emerald-400/50 text-emerald-400 transition-colors"
+          >
+            My Portal
           </router-link>
         </div>
 
@@ -126,8 +141,7 @@
             :class="{ 'text-cyan-400': $route.name === 'Contact' }"
           >
             Contact
-          </router-link>
-          <router-link
+          </router-link>          <router-link
             v-if="!authStore.isAuthenticated"
             to="/admin/login"
             @click="mobileMenuOpen = false"
@@ -143,6 +157,22 @@
           >
             Dashboard
           </router-link>
+          <router-link
+            v-if="!customerStore.isAuthenticated"
+            to="/customer/login"
+            @click="mobileMenuOpen = false"
+            class="mx-4 mt-2 px-4 py-2 glass-button border-emerald-500/30 hover:border-emerald-400/50 text-emerald-400 transition-colors text-center"
+          >
+            Customer Portal
+          </router-link>
+          <router-link
+            v-else
+            to="/customer/dashboard"
+            @click="mobileMenuOpen = false"
+            class="mx-4 mt-2 px-4 py-2 glass-button border-emerald-500/30 hover:border-emerald-400/50 text-emerald-400 transition-colors text-center"
+          >
+            My Portal
+          </router-link>
         </div>
       </div>
     </div>
@@ -152,8 +182,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCustomerStore } from '@/stores/customer'
 
 const authStore = useAuthStore()
+const customerStore = useCustomerStore()
 const mobileMenuOpen = ref(false)
 </script>
 

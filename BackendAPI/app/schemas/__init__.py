@@ -16,15 +16,22 @@ class CustomerBase(BaseModel):
 
 
 class CustomerCreate(CustomerBase):
-    pass
+    username: Optional[str] = None  # Optional for admin creation
+    password: Optional[str] = None  # Optional for admin creation
 
 
 class CustomerUpdate(CustomerBase):
     name: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 class Customer(CustomerBase):
     id: int
+    username: Optional[str] = None
+    is_active: bool = True
+    last_login: Optional[datetime] = None
     logo_path: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
@@ -36,7 +43,10 @@ class Customer(CustomerBase):
 # Product schemas
 class ProductBase(BaseModel):
     name: str
+    sku: Optional[str] = None
     description: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[str] = None
 
 
 class ProductCreate(ProductBase):
@@ -51,6 +61,7 @@ class Product(ProductBase):
     id: int
     customer_id: int
     created_at: datetime
+    updated_at: Optional[datetime] = None
     customer: Optional[Customer] = None
     
     class Config:
@@ -211,3 +222,23 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+
+# Customer authentication schemas
+class CustomerLogin(BaseModel):
+    username: str
+    password: str
+
+
+class CustomerToken(BaseModel):
+    access_token: str
+    token_type: str
+    customer: Optional[Customer] = None
+
+
+class CustomerDashboardStats(BaseModel):
+    total_products: int
+    total_certificates: int
+    active_certificates: int
+    recent_scans: List[ScanLog]
+    scans_this_month: int
