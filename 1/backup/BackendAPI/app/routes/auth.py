@@ -44,11 +44,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     
     try:
-        payload = verify_token(token)
+        from jose import JWTError, jwt
+        payload = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except:
+    except JWTError:
         raise credentials_exception
     
     user = db.query(User).filter(User.username == username).first()
@@ -66,8 +71,7 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+            headers={"WWW-Authenticate": "Bearer"},        )
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -78,13 +82,7 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "role": user.role,
-            "is_active": user.is_active
-        }
+        "user": user
     }
 
 

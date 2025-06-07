@@ -4,6 +4,6 @@
 API Routes initialization
 """
 
-from . import verify, admin, api_v1
+from . import verify, admin, api_v1, auth
 
-__all__ = ["verify", "admin", "api_v1"]
+__all__ = ["verify", "admin", "api_v1", "auth"]

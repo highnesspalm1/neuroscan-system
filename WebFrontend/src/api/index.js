@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 // Create axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
-  timeout: 30000,
+  timeout: 120000, // Increased to 2 minutes for Render cold starts
   headers: {
     'Content-Type': 'application/json',
   }
@@ -12,6 +12,7 @@ const api = axios.create({
 
 console.log('API Configuration:')
 console.log('- Base URL:', api.defaults.baseURL)
+console.log('- Timeout:', api.defaults.timeout, 'ms')
 console.log('- Environment VITE_API_URL:', import.meta.env.VITE_API_URL)
 console.log('- Environment VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
 

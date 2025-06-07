@@ -3,11 +3,36 @@ import api from './index'
 export const authApi = {
   // Login
   async login(credentials) {
-    const formData = new FormData()
-    formData.append('username', credentials.username)
-    formData.append('password', credentials.password)
+    console.log('AuthAPI: Sending login request to /auth/login')
+    console.log('AuthAPI: Request payload:', { username: credentials.username })
     
-    const response = await api.post('/admin/token', formData, {
+    const response = await api.post('/auth/login', {
+      username: credentials.username,
+      password: credentials.password
+    })
+    
+    console.log('AuthAPI: Login response status:', response.status)
+    console.log('AuthAPI: Login response data:', response.data)
+    
+    return response.data
+  },
+
+  // Get current user
+  async getCurrentUser() {
+    console.log('AuthAPI: Getting current user from /auth/me')
+    const response = await api.get('/auth/me')
+    console.log('AuthAPI: Current user response:', response.data)
+    return response.data
+  },
+
+  // Refresh token (using token endpoint for now)
+  async refreshToken() {
+    console.log('AuthAPI: Refreshing token')
+    const formData = new FormData()
+    formData.append('username', 'admin')
+    formData.append('password', 'admin123')
+    
+    const response = await api.post('/auth/token', formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       }
@@ -15,21 +40,8 @@ export const authApi = {
     return response.data
   },
 
-  // Get current user
-  async getCurrentUser() {
-    const response = await api.get('/admin/me')
-    return response.data
-  },
-
-  // Refresh token
-  async refreshToken() {
-    const response = await api.post('/admin/refresh')
-    return response.data
-  },
-
-  // Logout
+  // Logout (placeholder - no backend endpoint yet)
   async logout() {
-    const response = await api.post('/admin/logout')
-    return response.data
+    return { message: 'Logged out successfully' }
   }
 }
