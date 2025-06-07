@@ -29,22 +29,32 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
   }
-
   const login = async (credentials) => {
     try {
       isLoading.value = true
       error.value = null
       
+      console.log('Attempting login with credentials:', { username: credentials.username })
+      
       const response = await authApi.login(credentials)
+      
+      console.log('Login response received:', response)
+      
+      if (!response.access_token) {
+        throw new Error('No access token received')
+      }
       
       token.value = response.access_token
       user.value = response.user
       
       localStorage.setItem('neuroscan_token', token.value)
       
+      console.log('Login successful, token stored')
+      
       return response
     } catch (err) {
-      error.value = err.response?.data?.detail || 'Login failed'
+      console.error('Login error:', err)
+      error.value = err.response?.data?.detail || err.message || 'Login failed'
       throw err
     } finally {
       isLoading.value = false
