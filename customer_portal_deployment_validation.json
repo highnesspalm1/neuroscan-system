@@ -1,0 +1,42 @@
+{
+  "validation_timestamp": "2025-06-07T23:00:02.337225",
+  "frontend_url": "https://neuroscan-system.vercel.app",
+  "customer_portal_url": "https://neuroscan-system.vercel.app/customer/login",
+  "api_base_url": "https://neuroscan-api.onrender.com",
+  "test_results": {
+    "Frontend Accessibility": {
+      "status": "PASS",
+      "details": "Frontend accessible (Status: 200)"
+    },
+    "Customer Login Page": {
+      "status": "PASS",
+      "details": "Customer login page accessible (Status: 200)"
+    },
+    "API Health Check": {
+      "status": "PASS",
+      "details": "API healthy, DB connected (PostgreSQL)"
+    },
+    "Customer Authentication": {
+      "status": "PASS",
+      "details": "Login successful, token received, customer: Test Customer"
+    },
+    "Protected Endpoints": {
+      "status": "FAIL",
+      "error": "HTTPSConnectionPool(host='neuroscan-api.onrender.com', port=443): Read timed out. (read timeout=10)"
+    },
+    "CORS Configuration": {
+      "status": "FAIL",
+      "error": ""
+    },
+    "Error Handling Enhancement": {
+      "status": "PASS",
+      "details": "Enhanced login component deployed"
+    }
+  },
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 5,
+    "success_rate": "71.4%",
+    "all_tests_passed": false
+  }
+}
