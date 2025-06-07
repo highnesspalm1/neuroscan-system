@@ -1,0 +1,40 @@
+{
+  "deployment_info": {
+    "commit": "640b087 (209a860: Customer Portal Implementation)",
+    "timestamp": "2025-06-07T21:53:21.102311",
+    "duration_seconds": 1.98217,
+    "status": "PARTIAL"
+  },
+  "backend_deployment": {
+    "status": "SUCCESS",
+    "url": "https://neuroscan-api.onrender.com",
+    "health_check": true
+  },
+  "frontend_deployment": {
+    "status": "SUCCESS",
+    "url": "https://neuroscan-system.vercel.app",
+    "customer_portal": "https://neuroscan-system.vercel.app/customer/login"
+  },
+  "customer_portal": {
+    "authentication": "FAILED",
+    "working_endpoints": [],
+    "total_endpoints": 5,
+    "success_rate": "0/5"
+  },
+  "test_credentials": {
+    "username": "testcustomer",
+    "password": "password123",
+    "company": "Test Customer Company"
+  },
+  "deployment_log": [
+    "[21:53:19] INFO: \ud83d\udd04 Waiting for cloud deployment to complete...",
+    "[21:53:19] SUCCESS: \u2705 Backend deployment is online!",
+    "[21:53:19] INFO: \ud83d\udd10 Testing admin authentication...",
+    "[21:53:19] ERROR: \u274c Admin auth failed: 404 - {\"detail\":\"Not Found\"}",
+    "[21:53:19] INFO: \ud83e\uddea Testing customer portal authentication...",
+    "[21:53:19] ERROR: \u274c Customer auth failed: 500 - {\"detail\":\"Internal server error\"}",
+    "[21:53:19] INFO: \ud83c\udf10 Testing frontend deployment...",
+    "[21:53:19] SUCCESS: \u2705 Frontend main page accessible",
+    "[21:53:21] SUCCESS: \u2705 Customer login page accessible"
+  ]
+}

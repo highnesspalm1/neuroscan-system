@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-06-07 22:07:19",
+  "api_base": "https://neuroscan-api.onrender.com",
+  "frontend_url": "https://neuroscan-system.vercel.app",
+  "customer_portal_url": "https://neuroscan-system.vercel.app/customer/login",
+  "endpoints": {
+    "Health Check": {
+      "status": 200,
+      "working": true
+    },
+    "API Documentation": {
+      "status": 200,
+      "working": true
+    },
+    "Admin Login": {
+      "status": 200,
+      "working": true
+    },
+    "Customer Login": {
+      "status": 500,
+      "working": false
+    },
+    "Customer Profile": {
+      "status": 401,
+      "working": true
+    },
+    "Customer Dashboard": {
+      "status": 401,
+      "working": true
+    },
+    "Product Verification": {
+      "status": 500,
+      "working": false
+    }
+  },
+  "overall_status": "ISSUES_DETECTED"
+}
